@@ -19,6 +19,28 @@ All code lives in `baseline/`:
 | `utils.py` | Logging, seeding, Focal Loss, EarlyStopping |
 | `ns_groups.json` | NS feature grouping config (used by GroupNSTokenizer) |
 | `run.sh` | Launch script (default: RankMixer mode) |
+| `inference/infer.py` | Inference entry point: loads checkpoint + config from ckpt dir, runs prediction, outputs `predictions.json` |
+| `inference/model.py` | Model definition — copy of `baseline/model.py` for standalone inference |
+| `inference/dataset.py` | Dataset definition — copy of `baseline/dataset.py` for standalone inference |
+
+## Inference
+
+`baseline/inference/` is a self-contained inference package designed to run in the evaluation container. It reconstructs the model from the checkpoint directory's sidecar files (`train_config.json`, `schema.json`, `ns_groups.json`) and produces `predictions.json`.
+
+```bash
+# Run inference (environment variables)
+MODEL_OUTPUT_PATH=/path/to/ckpt \
+EVAL_DATA_PATH=/path/to/test_data \
+EVAL_RESULT_PATH=/path/to/results \
+python baseline/inference/infer.py
+```
+
+Key behaviors:
+- **Config resolution**: Reads `train_config.json` from the ckpt dir (written by `trainer.py` at save time); missing keys fall back to `_FALLBACK_MODEL_CFG` (must match `train.py` defaults).
+- **Schema resolution**: Prefers `schema.json` from the ckpt dir (exact match with training); falls back to `schema.json` in the data dir.
+- **ns_groups.json**: If `train_config` recorded a basename (because trainer copied it into the ckpt dir), resolves it against the ckpt dir first.
+- **Strict loading**: `load_state_dict(strict=True)` — any mismatch between the reconstructed model and `model.pt` fails fast.
+- **Output**: `predictions.json` with format `{"predictions": {"user_id_1": prob_1, "user_id_2": prob_2, ...}}`.
 
 ## Key Architecture Concepts
 

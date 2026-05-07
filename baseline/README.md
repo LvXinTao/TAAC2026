@@ -17,6 +17,9 @@ Baseline 实现了一个名为 **PCVRHyFormer** 的深度学习模型，用于�
 | `utils.py` | 工具函数：日志、随机种子、Focal Loss、EarlyStopping |
 | `ns_groups.json` | NS 特征分组配置（GroupNSTokenizer 使用） |
 | `run.sh` | 启动脚本（默认使用 RankMixer NSTokenizer） |
+| `inference/infer.py` | 推理入口：从 checkpoint 目录加载配置重建模型，输出 predictions.json |
+| `inference/model.py` | 模型定义 — 独立副本，供评估容器 standalone 使用 |
+| `inference/dataset.py` | 数据加载 — 独立副本，供评估容器 standalone 使用 |
 
 ---
 
@@ -205,7 +208,59 @@ for epoch in 1..num_epochs:
 
 ---
 
-## 四、关键约束
+## 四、推理层（`inference/`）
+
+### 4.1 设计目标
+
+`inference/` 是一个**自包含**的推理包，设计为在评测容器中独立运行。它不依赖 `baseline/` 下的其他文件，`model.py` 和 `dataset.py` 都是独立副本。
+
+### 4.2 模型重建
+
+推理时不直接接收超参数 CLI 参数，而是从 checkpoint 目录的 sidecar 文件自动重建模型：
+
+```
+train_config.json  →  resolve_model_cfg()  →  模型超参
+schema.json        →  build_feature_specs() →  特征规格
+ns_groups.json     →  NS 分组配置
+model.pt           →  state_dict             →  模型权重
+```
+
+**配置解析优先级**：
+1. 优先读 `train_config.json`（由 `trainer.py` 保存 checkpoint 时写入）
+2. 缺失的 key 回退到 `_FALLBACK_MODEL_CFG`（必须与 `train.py` 的 argparse 默认值一致）
+3. `num_time_buckets` 特殊处理：优先读 `use_time_buckets` 字段推导
+
+**schema 解析优先级**：
+1. 优先使用 checkpoint 目录中的 `schema.json`（与训练完全一致）
+2. 缺失时回退到测试数据目录中的 `schema.json`
+
+### 4.3 推理流程
+
+```
+1. 从 MODEL_OUTPUT_PATH 定位 checkpoint 目录
+2. 加载 train_config.json + schema.json + ns_groups.json
+3. 重建 PCVRHyFormer 模型（使用 resolve_model_cfg）
+4. load_state_dict(strict=True) — 任何不匹配立即报错
+5. 从 EVAL_DATA_PATH 加载测试数据（is_training=False，无 label）
+6. model.predict() → sigmoid → 得到概率
+7. 输出 predictions.json: {"predictions": {"user_id": prob, ...}}
+```
+
+### 4.4 环境变量
+
+| 变量 | 含义 |
+|------|------|
+| `MODEL_OUTPUT_PATH` | Checkpoint 目录（包含 model.pt + sidecar 文件） |
+| `EVAL_DATA_PATH` | 测试数据目录（*.parquet + schema.json） |
+| `EVAL_RESULT_PATH` | 输出目录，生成 predictions.json |
+
+### 4.5 严格加载
+
+`load_model_state_strict()` 使用 `strict=True` 加载权重。如果模型重建时的超参配置与训练时不一致（例如 train_config.json 缺失且使用了错误的默认值），会立即抛出 `RuntimeError` 而非静默产生错误预测。
+
+---
+
+## 五、关键约束
 
 1. **d_model 整除约束**：当 `rank_mixer_mode=full` 时，`d_model` 必须能被 `T = num_queries * num_sequences + num_ns` 整除
 2. **num_heads 约束**：`d_model % num_heads == 0`
@@ -230,3 +285,14 @@ cd baseline && bash run.sh \
 - `TRAIN_CKPT_PATH` → `--ckpt_dir`
 - `TRAIN_LOG_PATH` → `--log_dir`
 - `TRAIN_TF_EVENTS_PATH` → TensorBoard 日志目录
+
+## 六、推理命令
+
+```bash
+MODEL_OUTPUT_PATH=/path/to/ckpt \
+EVAL_DATA_PATH=/path/to/test_data \
+EVAL_RESULT_PATH=/path/to/results \
+python baseline/inference/infer.py
+```
+
+输出文件：`$EVAL_RESULT_PATH/predictions.json`，格式为 `{"predictions": {"user_id": prob, ...}}`。
