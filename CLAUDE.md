@@ -79,6 +79,26 @@ tensorboard --logdir /path/to/tf_events
 - Label: `label_type == 2` maps to positive class
 - Validation split: last `valid_ratio` fraction of RowGroups (file order)
 
+## TAAC2026-CLI
+
+平台工具位于 `~/.claude/skills/TAAC2026-CLI/`，通过 `taac2026` 调用。Cookie 在 `taiji-output/secrets/taiji-cookie.txt`。所有保存的CLI结果都在`taiji-output/`目录下。
+
+```bash
+# 抓取所有训练任务（指标、日志、checkpoint、代码）
+taac2026 scrape --all --direct --cookie-file taiji-output/secrets/taiji-cookie.txt
+
+# 增量同步（跳过未变化的已完成任务）
+taac2026 scrape --all --incremental --direct --cookie-file taiji-output/secrets/taiji-cookie.txt
+
+# 抓取所有 Evaluation 评测任务及 event log
+taac2026 scrape --evaluation --direct --cookie-file taiji-output/secrets/taiji-cookie.txt
+
+# 定向抓取指定训练任务
+taac2026 scrape --all --job-internal-id <ID> --direct --cookie-file taiji-output/secrets/taiji-cookie.txt
+```
+
+输出收在 `taiji-output/`：`eval-tasks.json`、`eval-tasks-summary.csv`、`eval-logs/`、`jobs.json`、`logs/` 等。已加入 `.gitignore`。
+
 ## Development Notes
 
 - Always work on a feature branch, never on `main`
