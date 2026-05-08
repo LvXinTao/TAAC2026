@@ -1,106 +1,62 @@
-# CLAUDE.md
+`baseline/`目录下为baseline代码，后续改动以baseline为基础进行改动。
 
-This file provides guidance to Claude Code (claude.ai/code) when working with this repository.
+## 项目开发规范
 
-## Project Overview
+- 每次进行新的算法改动或新的模型，需要**新建`feat/xxx`分支，并新建`yyyymmdd_xxx`目录**，所有改动都应在`yyyymmdd_xxx`目录下进行。**禁止修改其他算法模型的内容**。
 
-TAAC2026 (腾讯广告算法大赛) — Post-Click Conversion Rate (PCVR) prediction baseline. The model is **PCVRHyFormer**, a hybrid transformer that fuses user/item discrete & dense features with multi-domain behavioral sequences.
+## 训练与评估工具
 
-## Codebase Structure
+所有训练和评估操作**必须**使用 `taac2026` CLI，不要手动调用 API 或使用其他方式。
 
-All code lives in `baseline/`:
+### 认证
 
-| File | Responsibility |
-|------|---------------|
-| `model.py` | PCVRHyFormer model: RoPE attention, sequence encoders (swiglu/transformer/longer), MultiSeqHyFormerBlock, RankMixerBlock, NS Tokenizers (group/rankmixer), classifier |
-| `dataset.py` | `PCVRParquetDataset` (IterableDataset): reads raw Parquet, manages FeatureSchema, time-bucket encoding, pre-allocated numpy buffers |
-| `trainer.py` | `PCVRHyFormerRankingTrainer`: training loop, dual optimizer (Adagrad for sparse, AdamW for dense), BCE/Focal loss, AUC evaluation, checkpoint management |
-| `train.py` | Entry point: argparse, model/data construction, TensorBoard logging |
-| `utils.py` | Logging, seeding, Focal Loss, EarlyStopping |
-| `ns_groups.json` | NS feature grouping config (used by GroupNSTokenizer) |
-| `run.sh` | Launch script (default: RankMixer mode) |
-| `inference/infer.py` | Inference entry point: loads checkpoint + config from ckpt dir, runs prediction, outputs `predictions.json` |
-| `inference/model.py` | Model definition — copy of `baseline/model.py` for standalone inference |
-| `inference/dataset.py` | Dataset definition — copy of `baseline/dataset.py` for standalone inference |
+Cookie 保存在 `.taac2026/secrets/taiji-cookie.txt`。
 
-## Inference
+### 训练任务标准流程
 
-`baseline/inference/` is a self-contained inference package designed to run in the evaluation container. It reconstructs the model from the checkpoint directory's sidecar files (`train_config.json`, `schema.json`, `ns_groups.json`) and produces `predictions.json`.
-
-```bash
-# Run inference (environment variables)
-MODEL_OUTPUT_PATH=/path/to/ckpt \
-EVAL_DATA_PATH=/path/to/test_data \
-EVAL_RESULT_PATH=/path/to/results \
-python baseline/inference/infer.py
+```
+train prepare → train submit → train run
 ```
 
-Key behaviors:
-- **Config resolution**: Reads `train_config.json` from the ckpt dir (written by `trainer.py` at save time); missing keys fall back to `_FALLBACK_MODEL_CFG` (must match `train.py` defaults).
-- **Schema resolution**: Prefers `schema.json` from the ckpt dir (exact match with training); falls back to `schema.json` in the data dir.
-- **ns_groups.json**: If `train_config` recorded a basename (because trainer copied it into the ckpt dir), resolves it against the ckpt dir first.
-- **Strict loading**: `load_state_dict(strict=True)` — any mismatch between the reconstructed model and `model.pt` fails fast.
-- **Output**: `predictions.json` with format `{"predictions": {"user_id_1": prob_1, "user_id_2": prob_2, ...}}`.
-
-## Key Architecture Concepts
-
-- **NS Tokenizer**: Discrete features → embedding → grouped/chunked → projected to NS tokens. Two modes: `group` (one token per group from ns_groups.json) and `rankmixer` (all embeddings concatenated then equally split).
-- **Multi-domain sequences**: seq_a/b/c/d, each independently encoded then fused via Cross Attention + RankMixer token mixing.
-- **Dual optimizer**: Embedding tables use Adagrad; all other params use AdamW.
-- **High-cardinality embedding cold restart**: After a configured epoch, embeddings with vocab_size > threshold are re-initialized (MultiEpoch technique).
-- **Constraint**: When `rank_mixer_mode=full`, `d_model` must be divisible by `T = num_queries * num_sequences + num_ns`.
-
-## Common Commands
-
 ```bash
-# Train with default config (RankMixer mode)
-cd baseline && bash run.sh \
-    --data_dir /path/to/data \
-    --ckpt_dir /path/to/checkpoints \
-    --log_dir /path/to/logs
+# 准备提交包（扫描源码，创建 manifest.json）
+taac2026 train prepare --name <task-name> --source <source-dir>
 
-# Train with GroupNSTokenizer (comment out default block in run.sh, uncomment alternative)
-cd baseline && bash run.sh \
-    --data_dir /path/to/data \
-    --ckpt_dir /path/to/checkpoints \
-    --log_dir /path/to/logs
+# 上传到 COS 并创建任务
+taac2026 train submit --bundle submit-bundle --template-id <template-id>
 
-# Environment variables override CLI flags
-TRAIN_DATA_PATH=/path/to/data TRAIN_CKPT_PATH=/path/to/ckpt TRAIN_LOG_PATH=/path/to/logs bash baseline/run.sh
-
-# TensorBoard
-tensorboard --logdir /path/to/tf_events
+# 启动训练
+taac2026 train run --task-id <taskId>
 ```
 
-## Data Format
+### 常用命令
 
-- Input: Parquet files with columns like `user_int_feats_{fid}`, `item_int_feats_{fid}`, `user_dense_feats_{fid}`, `seq_{domain}_{fid}`, `label_type`, `user_id`, `timestamp`
-- Schema: `schema.json` in the data directory defines feature layout `(fid, vocab_size, dim)` per group
-- Label: `label_type == 2` maps to positive class
-- Validation split: last `valid_ratio` fraction of RowGroups (file order)
+| 操作 | 命令 |
+|------|------|
+| 列出训练任务 | `taac2026 train list [--incremental]` |
+| 查看任务详情+指标+日志 | `taac2026 train describe --job-id <taskId>` |
+| 仅查看日志 | `taac2026 train logs --job-id <taskId>` |
+| 仅查看指标 | `taac2026 train metrics --job-id <taskId>` |
+| 停止训练 | `taac2026 train stop --task-id <taskId>` |
+| 删除任务(需内部ID) | `taac2026 train delete --job-internal-id <numericId>` |
+| 列出评估任务 | `taac2026 eval list` |
+| 评估日志 | `taac2026 eval logs --task-id <taskId>` |
+| 评估指标 | `taac2026 eval metrics --task-id <taskId>` |
 
-## TAAC2026-CLI
+### ID 类型注意
 
-平台工具位于 `~/.claude/skills/TAAC2026-CLI/`，通过 `taac2026` 调用。Cookie 在 `taiji-output/secrets/taiji-cookie.txt`。所有保存的CLI结果都在`taiji-output/`目录下。
+- `taskId`（字符串，如 `angel_training_ams_...`）：用于 `run`、`stop`、`logs`、`metrics`、`describe`
+- `jobInternalId`（数字，如 `74958`）：仅用于 `delete`
 
-```bash
-# 抓取所有训练任务（指标、日志、checkpoint、代码）
-taac2026 scrape --all --direct --cookie-file taiji-output/secrets/taiji-cookie.txt
+两者均可在 `taiji-output/jobs.json` 中查到。
 
-# 增量同步（跳过未变化的已完成任务）
-taac2026 scrape --all --incremental --direct --cookie-file taiji-output/secrets/taiji-cookie.txt
+### 输出目录
 
-# 抓取所有 Evaluation 评测任务及 event log
-taac2026 scrape --evaluation --direct --cookie-file taiji-output/secrets/taiji-cookie.txt
-
-# 定向抓取指定训练任务
-taac2026 scrape --all --job-internal-id <ID> --direct --cookie-file taiji-output/secrets/taiji-cookie.txt
-```
-
-输出收在 `taiji-output/`：`eval-tasks.json`、`eval-tasks-summary.csv`、`eval-logs/`、`jobs.json`、`logs/` 等。已加入 `.gitignore`。
-
-## Development Notes
-
-- Always work on a feature branch, never on `main`
-- For parallel dev tasks, use separate worktrees
-- Commit with descriptive messages after each feature is complete
+所有输出默认写入 `taiji-output/`：
+- `jobs.json` / `jobs-summary.csv` — 训练任务映射
+- `submit-live/<timestamp>/` — 提交结果
+- `train-jobs/job-{taskId}.json` — 任务详情
+- `train-jobs/logs/{taskId}/` — Pod 日志
+- `train-jobs/metrics/` — 训练指标
+- `eval-tasks.json` — 评估任务
+- `eval-jobs/` — 评估日志和指标
