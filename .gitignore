@@ -1,4 +1,6 @@
 **/.DS_Store
 **/__pycache__
 
-taiji-output/*
+.taac2026/
+.claude/
+taiji-output/
