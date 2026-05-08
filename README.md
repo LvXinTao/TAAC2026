@@ -8,14 +8,7 @@
 
 ## 训练与评估工具
 
-项目使用 `taac2026` CLI 作为训练、评估全流程工具。安装方式：
-
-```bash
-cd ~/Code/AI/taac2026-cli  # 替换为实际路径
-npm install
-npm link
-# 确保 taac2026 在 PATH 中
-```
+项目使用 `taac2026` CLI 作为训练、评估全流程工具。
 
 ### 认证
 
