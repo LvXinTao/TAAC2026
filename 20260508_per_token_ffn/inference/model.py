@@ -317,7 +317,7 @@ class RankMixerBlock(nn.Module):
 
     Performs three steps:
     1. Token Mixing: Parameter-free tensor reshaping.
-    2. Per-token FFN: Shared-parameter feedforward network.
+    2. Per-token FFN: Independent feedforward network per token position.
     3. Residual connection: Q_boost = Q + Q_e.
 
     Constraint: d_model must be divisible by n_total in 'full' mode.
@@ -347,13 +347,18 @@ class RankMixerBlock(nn.Module):
                 )
             self.d_sub = d_model // n_total
 
-        # Per-token FFN (shared parameters) — used by both 'full' and 'ffn_only'
-        self.norm = nn.LayerNorm(d_model)
-        self.fc1 = nn.Linear(d_model, d_model * hidden_mult)
-        self.fc2 = nn.Linear(d_model * hidden_mult, d_model)
+        # Per-token independent FFN — one set of layers per token position
+        self.norms = nn.ModuleList([nn.LayerNorm(d_model) for _ in range(n_total)])
+        self.fc1s = nn.ModuleList([
+            nn.Linear(d_model, d_model * hidden_mult) for _ in range(n_total)
+        ])
+        self.fc2s = nn.ModuleList([
+            nn.Linear(d_model * hidden_mult, d_model) for _ in range(n_total)
+        ])
         self.dropout = nn.Dropout(dropout)
-        # Post-LN after residual to stabilize stacked block outputs
-        self.post_norm = nn.LayerNorm(d_model)
+        self.post_norms = nn.ModuleList([
+            nn.LayerNorm(d_model) for _ in range(n_total)
+        ])
 
     def token_mixing(self, Q: torch.Tensor) -> torch.Tensor:
         """Performs parameter-free token mixing via reshape and transpose.
@@ -399,16 +404,19 @@ class RankMixerBlock(nn.Module):
         else:  # 'ffn_only'
             Q_hat = Q
 
-        # Per-token FFN
-        x = self.norm(Q_hat)
-        x = self.fc1(x)
-        x = F.gelu(x)
-        x = self.dropout(x)
-        Q_e = self.fc2(x)
+        # Per-token independent FFN
+        token_outputs = []
+        for i in range(self.T):
+            x = self.norms[i](Q_hat[:, i, :])       # (B, D)
+            x = self.fc1s[i](x)                      # (B, hidden)
+            x = F.gelu(x)
+            x = self.dropout(x)
+            x = self.fc2s[i](x)                      # (B, D)
+            x = Q[:, i, :] + x                       # residual from original Q
+            x = self.post_norms[i](x)                # (B, D)
+            token_outputs.append(x)
 
-        # Residual from original Q
-        Q_boost = Q + Q_e
-        Q_boost = self.post_norm(Q_boost)
+        Q_boost = torch.stack(token_outputs, dim=1)  # (B, T, D)
         return Q_boost
 
 
