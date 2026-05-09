@@ -13,10 +13,16 @@
 
 Cookie 保存在 `.taac2026/secrets/taiji-cookie.txt`。
 
+```bash
+taac2026 login                        # 浏览器登录
+taac2026 login --cookie-string "..."  # 直接粘贴 cookie
+taac2026 login --stdin                # 从 stdin 读取
+```
+
 ### 训练任务标准流程
 
 ```
-train prepare → train submit → train run
+train prepare → train submit → train run → train publish
 ```
 
 ```bash
@@ -24,25 +30,42 @@ train prepare → train submit → train run
 taac2026 train prepare --name <task-name> --source <source-dir>
 
 # 上传到 COS 并创建任务
-taac2026 train submit --bundle submit-bundle --template-id <template-id>
+taac2026 train submit --bundle submit-bundle --template-id <template-id> [--dry-run]
 
 # 启动训练
 taac2026 train run --task-id <taskId>
+
+# 训练完成后发布 checkpoint 为模型（获取 mould_id 用于评估任务）
+taac2026 train publish --task-id <taskId> [--name <name>] [--desc <desc>]
 ```
+
+### 完整训练→评估流程
+
+```
+train prepare → train submit → train run → train publish → eval prepare → eval submit
+```
+
+1. 训练完成后先 `train publish`，输出 `publish-<taskId>.json` 中包含 `mouldId`
+2. 使用 `eval prepare --name <name> --source <dir>` 准备评估代码包
+3. 使用 `eval submit --bundle eval-bundle --mould-id <mouldId>` 提交评估
 
 ### 常用命令
 
 | 操作 | 命令 |
 |------|------|
-| 列出训练任务 | `taac2026 train list [--incremental]` |
+| 列出训练任务 | `taac2026 train list [--incremental] [--page-size <n>]` |
 | 查看任务详情+指标+日志 | `taac2026 train describe --job-id <taskId>` |
+| 描述所有任务 | `taac2026 train describe --all` |
 | 仅查看日志 | `taac2026 train logs --job-id <taskId>` |
-| 仅查看指标 | `taac2026 train metrics --job-id <taskId>` |
+| 仅查看指标 | `taac2026 train metrics --job-id <taskId> [--json]` |
 | 停止训练 | `taac2026 train stop --task-id <taskId>` |
 | 删除任务(需内部ID) | `taac2026 train delete --job-internal-id <numericId>` |
-| 列出评估任务 | `taac2026 eval list` |
+| 发布 checkpoint | `taac2026 train publish --task-id <taskId>` |
+| 列出评估任务 | `taac2026 eval list [--page-size <n>]` |
 | 评估日志 | `taac2026 eval logs --task-id <taskId>` |
-| 评估指标 | `taac2026 eval metrics --task-id <taskId>` |
+| 评估指标 | `taac2026 eval metrics --task-id <taskId> [--json]` |
+| 评估准备 | `taac2026 eval prepare --name <name> --source <dir>` |
+| 评估提交 | `taac2026 eval submit --bundle eval-bundle --mould-id <id>` |
 
 ### ID 类型注意
 
@@ -57,7 +80,12 @@ taac2026 train run --task-id <taskId>
 - `jobs.json` / `jobs-summary.csv` — 训练任务映射
 - `submit-live/<timestamp>/` — 提交结果
 - `train-jobs/job-{taskId}.json` — 任务详情
+- `train-jobs/job-{taskId}-metrics.csv` — 训练指标
+- `train-jobs/job-{taskId}-checkpoints.csv` — checkpoint 列表
 - `train-jobs/logs/{taskId}/` — Pod 日志
-- `train-jobs/metrics/` — 训练指标
-- `eval-tasks.json` — 评估任务
+- `train-jobs/metrics/` — 训练指标 CSV/JSON
+- `train-jobs/ckpt/publish-{taskId}.json` — 发布结果（含 mouldId）
+- `eval-bundle/` — eval prepare 输出
+- `eval-submit-live/<timestamp>/` — eval submit 结果
+- `eval-tasks.json` / `eval-tasks-summary.csv` — 评估任务
 - `eval-jobs/` — 评估日志和指标

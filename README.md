@@ -9,7 +9,8 @@
 
 ## 训练与评估工具
 
-项目使用 `taac2026` CLI 作为训练、评估全流程工具。
+项目使用 [taac2026](https://github.com/LvXinTao/TAAC2026-CLI) CLI 作为训练、评估全流程工具。
+
 
 ### 认证
 
@@ -26,24 +27,48 @@ taac2026 train submit --bundle submit-bundle --template-id <template-id>
 
 # 3. 启动训练
 taac2026 train run --task-id <taskId>
+
+# 4. 训练完成后发布 checkpoint 为模型（获取 mould_id 用于评估）
+taac2026 train publish --task-id <taskId> --name <publish-name>
 ```
 
 ### 监控
 
 ```bash
 taac2026 train describe --job-id <taskId>    # 详情+指标+日志
+taac2026 train describe --all                 # 描述所有 jobs.json 中的任务
 taac2026 train logs --job-id <taskId>         # 仅 pod 日志
-taac2026 train metrics --job-id <taskId>      # 训练指标
+taac2026 train metrics --job-id <taskId>      # 训练指标（默认输出 CSV）
+taac2026 train metrics --job-id <taskId> --json  # 训练指标（输出 JSON）
 taac2026 train list       # 获取所有训练任务
+taac2026 train stop --task-id <taskId>        # 停止训练
+taac2026 train delete --job-internal-id <id>  # 删除任务（需数字内部 ID）
 ```
 
 ### 评估
 
 ```bash
+# 评估完整流程
+taac2026 eval prepare --name my-eval --source <source-dir>
+taac2026 eval submit --bundle eval-bundle --mould-id <mouldId>
+```
+
+```bash
 taac2026 eval list                            # 列出评估任务
 taac2026 eval logs --task-id <taskId>         # 评估日志
 taac2026 eval metrics --task-id <taskId>      # 评估指标
+taac2026 eval metrics --task-id <taskId> --json  # 评估指标（输出 JSON）
 ```
+
+### 完整训练→评估流程
+
+```
+train prepare → train submit → train run → train publish → eval prepare → eval submit
+```
+
+1. 训练完成后先 `train publish` 发布 checkpoint，输出中会包含 `mould_id`
+2. 使用 `eval prepare` 准备评估代码包
+3. 使用 `eval submit --mould-id <mouldId>` 提交评估任务
 
 输出默认写入 `taiji-output/` 目录。完整参考见 `taac2026 --help`。
 
