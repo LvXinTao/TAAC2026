@@ -32,7 +32,7 @@
 taac2026 train prepare --name my-model --source <source-dir>
 
 # 2. 上传并创建任务
-taac2026 train submit --bundle submit-bundle --template-id <template-id>
+taac2026 train submit --bundle submit-bundle --template-id <template-id,位于taijiout/train-jobs> --gpu-num <gpu-num> --yes
 
 # 3. 启动训练
 taac2026 train run --task-id <taskId>
