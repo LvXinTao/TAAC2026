@@ -9,12 +9,16 @@
 
 ## 实验结果
 
-实验结果记录在 `exp_result.csv`，包含 `date`、`name`、`val/LogLoss`、`val/AUC`、`test/AUC`、`test/delta_AUC` 列。
+实验结果记录在 `exp_result.csv`，包含 `date`、`name`、`val/LogLoss`、`val/AUC`、`val/delta_AUC`、`test/AUC`、`test/delta_AUC`、`baseline` 列。
 
-| date | name | val/LogLoss | val/AUC | test/AUC | test/delta_AUC |
-|------|------|-------------|---------|----------|----------------|
-| 2026-05-08 | baseline | 0.22809796035289764 | 0.8642705082893372 | 0.841855 | - |
-| 2026-05-08 | 20260508_per_token_ffn | 0.22810348868370056 | 0.8648973703384399 | 0.842699 | +0.000844 |
+| date | name | val/LogLoss | val/AUC | val/delta_AUC | test/AUC | test/delta_AUC | baseline |
+|------|------|-------------|---------|---------------|----------|----------------|----------|
+| 2026-05-08 | baseline | 0.22810 | 0.86427 | - | 0.84186 | - | - |
+| 2026-05-08 | per-token-ffn | 0.22810 | 0.86490 | +0.00063 | 0.84270 | +0.00084 | baseline |
+| 2026-05-11 | timestamp-features | 0.22584 | 0.86837 | +0.00347 | 0.84501 | +0.00231 | per-token-ffn |
+| 2026-05-10 | TAAC_focal_dynamic | 0.25680 | 0.86528 | +0.00038 | | | per-token-ffn |
+| 2026-05-10 | TAAC_poly | 0.25543 | 0.86480 | -0.00010 | 0.83648 | -0.00622 | per-token-ffn |
+| 2026-05-12 | seq-timestamp-sideinfo | 0.22614 | 0.86749 | +0.00259 | 0.84216 | -0.00054 | per-token-ffn |
 
 ## 训练与评估工具
 
@@ -58,7 +62,7 @@ taac2026 train delete --job-internal-id <id>  # 删除任务（需数字内部 I
 
 ```bash
 # 评估完整流程
-taac2026 eval prepare --name my-eval --source <source-dir>
+taac2026 eval prepare --name my-eval --source <source-dir> # 只需要inference/下的代码
 taac2026 eval submit --bundle eval-bundle --mould-id <mouldId>
 ```
 
