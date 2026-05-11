@@ -7,12 +7,13 @@
 
 ## 实验结果
 
-实验结果记录在 `exp_result.csv`（date, name, val/LogLoss, val/AUC, test/AUC, test/delta_AUC）。
+实验结果记录在 `exp_result.csv`（date, name, val/LogLoss, val/AUC, val/delta_AUC, test/AUC, test/delta_AUC）。
 
-| date | name | val/LogLoss | val/AUC | test/AUC | test/delta_AUC |
-|------|------|-------------|---------|----------|----------------|
-| 2026-05-08 | baseline | 0.22809796035289764 | 0.8642705082893372 | 0.841855 | - |
-| 2026-05-09 | per-token-ffn | 0.22810348868370056 | 0.8648973703384399 | 0.842699 | +0.000844 |
+| date | name | val/LogLoss | val/AUC | val/delta_AUC | test/AUC | test/delta_AUC |
+|------|------|-------------|---------|---------------|----------|----------------|
+| 2026-05-08 | baseline | 0.22809796035289764 | 0.8642705082893372 | - | 0.841855 | - |
+| 2026-05-09 | per-token-ffn | 0.22810348868370056 | 0.8648973703384399 | +0.000627 | 0.842699 | +0.000844 |
+| 2026-05-11 | timestamp-features | 0.22583505511283875 | 0.8683660626411438 | +0.004096 | | |
 
 每次新实验完成后，将结果追加到 `exp_result.csv` 并同时更新本节表格。
 
@@ -57,7 +58,7 @@ train prepare → train submit → train run → train publish → eval prepare 
 ```
 
 1. 训练完成后先 `train publish`，输出 `publish-<taskId>.json` 中包含 `mouldId`
-2. 使用 `eval prepare --name <name> --source <dir>` 准备评估代码包
+2. 使用 `eval prepare --name <name> --source <dir>` 准备评估代码包（只需要inference/下的代码）
 3. 使用 `eval submit --bundle eval-bundle --mould-id <mouldId>` 提交评估
 
 ### 常用命令

@@ -9,12 +9,13 @@
 
 ## 实验结果
 
-实验结果记录在 `exp_result.csv`，包含 `date`、`name`、`val/LogLoss`、`val/AUC`、`test/AUC`、`test/delta_AUC` 列。
+实验结果记录在 `exp_result.csv`，包含 `date`、`name`、`val/LogLoss`、`val/AUC`、`val/delta_AUC`、`test/AUC`、`test/delta_AUC` 列。
 
-| date | name | val/LogLoss | val/AUC | test/AUC | test/delta_AUC |
-|------|------|-------------|---------|----------|----------------|
-| 2026-05-08 | baseline | 0.22809796035289764 | 0.8642705082893372 | 0.841855 | - |
-| 2026-05-08 | 20260508_per_token_ffn | 0.22810348868370056 | 0.8648973703384399 | 0.842699 | +0.000844 |
+| date | name | val/LogLoss | val/AUC | val/delta_AUC | test/AUC | test/delta_AUC |
+|------|------|-------------|---------|---------------|----------|----------------|
+| 2026-05-08 | baseline | 0.22809796035289764 | 0.8642705082893372 | - | 0.841855 | - |
+| 2026-05-08 | 20260508_per_token_ffn | 0.22810348868370056 | 0.8648973703384399 | +0.000627 | 0.842699 | +0.000844 |
+| 2026-05-11 | 20260510_timestamp_features | 0.22583505511283875 | 0.8683660626411438 | +0.004096 | | |
 
 ## 训练与评估工具
 
@@ -58,7 +59,7 @@ taac2026 train delete --job-internal-id <id>  # 删除任务（需数字内部 I
 
 ```bash
 # 评估完整流程
-taac2026 eval prepare --name my-eval --source <source-dir>
+taac2026 eval prepare --name my-eval --source <source-dir> # 只需要inference/下的代码
 taac2026 eval submit --bundle eval-bundle --mould-id <mouldId>
 ```
 
