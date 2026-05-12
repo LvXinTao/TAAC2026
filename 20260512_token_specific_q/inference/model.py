@@ -241,6 +241,38 @@ class RoPEMultiheadAttention(nn.Module):
         return out, None
 
 
+class TokenSpecificQProjection(nn.Module):
+    """Per-token-position Q projection for cross-attention.
+
+    Each global token position gets its own Q matrix, enabling position-aware
+    query vectors instead of a shared Q.
+    """
+
+    def __init__(self, d_model: int, num_tokens: int) -> None:
+        super().__init__()
+        self.d_model = d_model
+        self.num_tokens = num_tokens
+        self.W_q = nn.Parameter(torch.empty(num_tokens, d_model, d_model))
+        self.bias = nn.Parameter(torch.empty(num_tokens, d_model))
+        self.reset_parameters()
+
+    def reset_parameters(self) -> None:
+        for i in range(self.num_tokens):
+            nn.init.xavier_uniform_(self.W_q[i])
+            nn.init.zeros_(self.bias[i])
+
+    def forward(self, query: torch.Tensor) -> torch.Tensor:
+        """Projects each token position with its own Q matrix.
+
+        Args:
+            query: (B, Nq, D)
+
+        Returns:
+            (B, Nq, D)
+        """
+        return torch.einsum('bnd,ndm->bnm', query, self.W_q) + self.bias
+
+
 class CrossAttention(nn.Module):
     """Cross-attention module.
 
@@ -252,11 +284,14 @@ class CrossAttention(nn.Module):
         self,
         d_model: int,
         num_heads: int,
+        num_queries: int = 1,
+        token_specific_q: bool = False,
         dropout: float = 0.0,
         ln_mode: str = 'pre'
     ) -> None:
         super().__init__()
         self.ln_mode = ln_mode
+        self.token_specific_q = token_specific_q
 
         self.attn = RoPEMultiheadAttention(
             d_model=d_model,
@@ -264,6 +299,9 @@ class CrossAttention(nn.Module):
             dropout=dropout,
             rope_on_q=False,
         )
+
+        if token_specific_q:
+            self.tsq_proj = TokenSpecificQProjection(d_model, num_queries)
 
         if ln_mode in ['pre', 'post']:
             self.norm_q = nn.LayerNorm(d_model)
@@ -295,8 +333,13 @@ class CrossAttention(nn.Module):
             query = self.norm_q(query)
             key_value = self.norm_kv(key_value)
 
+        if self.token_specific_q:
+            Q = self.tsq_proj(query)
+        else:
+            Q = query
+
         out, _ = self.attn(
-            query=query,
+            query=Q,
             key=key_value,
             value=key_value,
             key_padding_mask=key_padding_mask,
@@ -875,7 +918,8 @@ class MultiSeqHyFormerBlock(nn.Module):
         dropout: float = 0.0,
         top_k: int = 50,
         causal: bool = False,
-        rank_mixer_mode: str = 'full'
+        rank_mixer_mode: str = 'full',
+        token_specific_q: bool = False,
     ) -> None:
         super().__init__()
         self.num_sequences = num_sequences
@@ -901,6 +945,8 @@ class MultiSeqHyFormerBlock(nn.Module):
             CrossAttention(
                 d_model=d_model,
                 num_heads=num_heads,
+                num_queries=num_queries,
+                token_specific_q=token_specific_q,
                 dropout=dropout,
                 ln_mode='pre'
             )
@@ -1237,6 +1283,8 @@ class PCVRHyFormer(nn.Module):
         ns_tokenizer_type: str = 'rankmixer',
         user_ns_tokens: int = 0,
         item_ns_tokens: int = 0,
+        # Cross-attention variant
+        token_specific_q: bool = False,
     ) -> None:
         super().__init__()
 
@@ -1409,6 +1457,7 @@ class PCVRHyFormer(nn.Module):
                 top_k=seq_top_k,
                 causal=seq_causal,
                 rank_mixer_mode=rank_mixer_mode,
+                token_specific_q=token_specific_q,
             )
             for _ in range(num_hyformer_blocks)
         ])
