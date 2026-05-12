@@ -38,6 +38,16 @@
 | `train.py` | 新增 --token_specific_q 参数 |
 | `run.sh` | 添加 --num_epochs 8 和 --token_specific_q |
 
+### 实验结果
+
+| metric | value | baseline (timestamp_features) | delta |
+|--------|-------|------------------------------|-------|
+| val/LogLoss | 0.22592 | 0.22584 | +0.00008 |
+| val/AUC | 0.86862 | 0.86837 | +0.00026 |
+| test/AUC | 0.84152 | 0.84501 | -0.00348 |
+
+val AUC 有微弱提升 (+0.00026)，但 test AUC 下降 0.00348，可能存在过拟合。
+
 ### 基础
 
 本实验基于 `20260510_timestamp_features` 代码。
