@@ -285,7 +285,7 @@ class CrossAttention(nn.Module):
         d_model: int,
         num_heads: int,
         num_queries: int = 1,
-        token_specific_q: bool = False,
+        token_specific_q: bool = True,
         dropout: float = 0.0,
         ln_mode: str = 'pre'
     ) -> None:
