@@ -79,3 +79,13 @@ cd 20260512_combined_timestamp && bash run.sh \
 ## 基础
 
 本实验基于 `20260511_seq_timestamp_sideinfo` 代码（已包含序列时间特征），在此基础上新增非序列时间特征。
+
+## 实验结果
+
+| 指标 | 值 |
+|------|------|
+| val/LogLoss | 0.22628 |
+| val/AUC | 0.86843 (+0.00354 vs per-token-ffn) |
+| test/AUC | 0.84099 (-0.00171 vs per-token-ffn) |
+
+val 上表现良好 (+0.00354)，但 test 上出现泛化问题 (-0.00171)，与 seq-timestamp-sideinfo 和 token-specific-q 的趋势类似，提示序列时间特征可能在验证集上学到了特定的时间模式。
