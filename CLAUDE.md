@@ -43,10 +43,12 @@ train prepare → train submit → train run → train publish
 
 ```bash
 # 准备提交包（扫描源码，创建 manifest.json）
-taac2026 train prepare --name <task-name> --source <source-dir>
+# --template-id 为完整 taskId 字符串（如 angel_training_ams_...）
+taac2026 train prepare --name <task-name> --source <source-dir> --template-id <taskId>
 
 # 上传到 COS 并创建任务
-taac2026 train submit --bundle submit-bundle --template-id <template-id> [--dry-run]
+# --template-id 为内部数字 ID（jobInternalId，如 92380），NOT the full taskId string
+taac2026 train submit --bundle submit-bundle --template-id <jobInternalId> [--dry-run]
 
 # 启动训练
 taac2026 train run --task-id <taskId>
@@ -85,8 +87,13 @@ train prepare → train submit → train run → train publish → eval prepare 
 
 ### ID 类型注意
 
-- `taskId`（字符串，如 `angel_training_ams_...`）：用于 `run`、`stop`、`logs`、`metrics`、`describe`
-- `jobInternalId`（数字，如 `74958`）：仅用于 `delete`
+- `taskId`（字符串，如 `angel_training_ams_...`）：用于 `prepare` 的 `--template-id`、`run`、`stop`、`logs`、`metrics`、`describe`
+- `jobInternalId`（数字，如 `92380`）：用于 `submit` 的 `--template-id`、`delete`
+- 查找 `jobInternalId` 的方式：
+  1. `taiji-output/jobs.json` → `jobsById[taskId].jobInternalId`
+  2. `taiji-output/submit-live/*/plan.json` → `templateJobInternalId`
+  3. `taiji-output/submit-bundle/manifest.json` → `templateJobId`（然后在 `jobs.json` 中查其 `jobInternalId`）
+  4. 已知示例：`token-specific-q` → `92380`，`TAAC_stat_cross` → `92437`
 
 两者均可在 `taiji-output/jobs.json` 中查到。
 
