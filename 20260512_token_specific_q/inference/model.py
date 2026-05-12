@@ -919,7 +919,7 @@ class MultiSeqHyFormerBlock(nn.Module):
         top_k: int = 50,
         causal: bool = False,
         rank_mixer_mode: str = 'full',
-        token_specific_q: bool = False,
+        token_specific_q: bool = True,
     ) -> None:
         super().__init__()
         self.num_sequences = num_sequences
@@ -1284,7 +1284,7 @@ class PCVRHyFormer(nn.Module):
         user_ns_tokens: int = 0,
         item_ns_tokens: int = 0,
         # Cross-attention variant
-        token_specific_q: bool = False,
+        token_specific_q: bool = True,
     ) -> None:
         super().__init__()
 
