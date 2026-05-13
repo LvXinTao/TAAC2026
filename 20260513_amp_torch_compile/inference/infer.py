@@ -411,6 +411,8 @@ def main() -> None:
             if use_amp_infer:
                 with torch.autocast(device_type='cuda', dtype=torch.bfloat16):
                     logits, _ = model.predict(model_input)
+                # Cast BF16 back to FP32 for numpy/sklearn compatibility.
+                logits = logits.float()
             else:
                 logits, _ = model.predict(model_input)
             logits = logits.squeeze(-1)

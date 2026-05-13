@@ -10,3 +10,5 @@ date,name,val/LogLoss,val/AUC,val/delta_AUC,test/AUC,test/delta_AUC,baseline
 2026-05-13,20260513_torch_compile,0.226283,0.867732,-0.00063,0.845137,+0.00013,timestamp-features
 2026-05-13,20260513_amp_training,0.2258773148059845,0.8686180710792542,+0.00025,0.844924,-0.00008,timestamp_features
 2026-05-14,20260513_time_split,0.279,0.837,-0.031,0.834474,-0.011,timestamp-features
+2026-05-14,20260513_amp_torch_compile,0.225554,0.868484,+0.00011,0.839429,-0.00558,timestamp-features
+2026-05-14,20260513_amp_torch_compile_default,0.225559,0.868464,+0.00010,0.840909,-0.00410,timestamp-features
