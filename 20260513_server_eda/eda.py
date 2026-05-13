@@ -347,7 +347,7 @@ def main() -> None:
                         st['max'] = v_max
 
             elif st['type'] == 'list':
-                arr = col.combine()
+                arr = col.combine_chunks()
                 valid_mask = arr.is_valid()
                 if valid_mask.to_numpy().any():
                     offsets = arr.offsets.to_numpy()
@@ -446,7 +446,7 @@ def main() -> None:
                 s['null_count'] += col.null_count
                 s['total_count'] += len(col)
 
-                arr = col.combine()
+                arr = col.combine_chunks()
                 valid_mask = arr.is_valid()
                 if valid_mask.to_numpy().any():
                     offsets = arr.offsets.to_numpy()
