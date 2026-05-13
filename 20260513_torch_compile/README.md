@@ -35,6 +35,11 @@ python train.py --num_epochs 10
 - 双优化器（Adagrad + AdamW）不影响 compile，compile 仅作用于 forward 图
 - 模型 save/load 正常（compile 图为运行时附加，不影响权重序列化）
 
+### checkpoint 前缀处理
+
+`torch.compile` 训练出的 checkpoint 会在 state_dict key 前加 `_orig_mod.` 前缀。
+推理脚本 `inference/infer.py` 在加载时自动剥离该前缀，使同一 checkpoint 可被未编译的推理模型正常加载。
+
 ## timestamp 特征
 
 本实验基于 `20260510_timestamp_features`，保留了 hour + day_of_week 合成特征（从 parquet 的 `timestamp` 列提取，fid=201/202）。
@@ -44,6 +49,7 @@ python train.py --num_epochs 10
 | 文件 | 改动 |
 |------|------|
 | `train.py` | 新增 `--use_torch_compile` 参数，添加 `torch.compile()` 调用 |
+| `inference/infer.py` | 加载 state_dict 时自动剥离 `_orig_mod.` 前缀 |
 | `dataset.py` | 同 timestamp-features |
 | `inference/dataset.py` | 同 timestamp-features |
 | 其他文件 | 从 `20260510_timestamp_features/` 复制，无修改 |
