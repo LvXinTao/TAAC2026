@@ -4,6 +4,19 @@
 
 使用 `torch.compile(mode="reduce-overhead")` 加速模型训练，预期减少每个 batch 的 forward pass overhead。
 
+## 实验结果
+
+| 指标 | 值 | vs timestamp-features |
+|------|-----|----------------------|
+| val/LogLoss | 0.22628 | +0.00045 (略差) |
+| val/AUC | 0.86773 | -0.00063 (略差) |
+| test/AUC | 0.84514 | **+0.00013 (微升)** |
+| 训练 GPU 数 | 2 | - |
+| 训练 epochs | 8 | - |
+| 评估推理耗时 | 467.72s | - |
+
+torch.compile 对模型精度无负面影响，test/AUC 与 timestamp-features 基本持平（+0.00013）。
+
 ## 使用方式
 
 ```bash
