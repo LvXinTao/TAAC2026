@@ -400,16 +400,25 @@ class PCVRParquetDataset(IterableDataset):
         gc.collect()
 
     def _iter_row_ranges(self) -> Iterator[Dict[str, Any]]:
-        """Row-range-based iteration for time-ordered splits."""
+        """Row-range-based iteration for time-ordered splits.
+
+        Groups ranges by file and row group so that each row group is read
+        only once, even if many scattered ranges fall within it.
+        """
         worker_info = torch.utils.data.get_worker_info()
         ranges = self._row_ranges
         if worker_info is not None and worker_info.num_workers > 1:
             ranges = [r for i, r in enumerate(ranges)
                       if i % worker_info.num_workers == worker_info.id]
 
+        # Group ranges by file.
+        file_ranges: Dict[str, List[Tuple[int, int]]] = {}
+        for fpath, start, end in ranges:
+            file_ranges.setdefault(fpath, []).append((start, end))
+
         buffer: List[Dict[str, Any]] = []
-        for file_path, start_row, end_row in ranges:
-            for batch_dict in self._read_row_range(file_path, start_row, end_row):
+        for file_path, rg_list in file_ranges.items():
+            for batch_dict in self._read_file_ranges(file_path, rg_list):
                 if self.shuffle and self.buffer_batches > 1:
                     buffer.append(batch_dict)
                     if len(buffer) >= self.buffer_batches:
@@ -424,34 +433,55 @@ class PCVRParquetDataset(IterableDataset):
         del buffer
         gc.collect()
 
-    def _read_row_range(
-        self, file_path: str, start_row: int, end_row: int
+    def _read_file_ranges(
+        self, file_path: str, ranges: List[Tuple[int, int]]
     ) -> Iterator[Dict[str, Any]]:
-        """Read rows [start_row, end_row) from a single parquet file."""
+        """Read a single parquet file once, extracting all needed row slices.
+
+        For each row group, collect all range fragments that overlap with it,
+        then read the row group once and concatenate the slices.
+        """
         pf = pq.ParquetFile(file_path)
+        n_rg = pf.metadata.num_row_groups
+
         # Build cumulative row offsets per row group.
         rg_cumsum = [0]
-        for rg_i in range(pf.metadata.num_row_groups):
+        for rg_i in range(n_rg):
             rg_cumsum.append(rg_cumsum[-1] + pf.metadata.row_group(rg_i).num_rows)
 
-        for rg_i in range(pf.metadata.num_row_groups):
-            rg_start = rg_cumsum[rg_i]
-            rg_end = rg_cumsum[rg_i + 1]
+        # Pre-group ranges by row group: rg_i -> list of (local_start, local_len).
+        rg_slices: Dict[int, List[Tuple[int, int]]] = {}
+        for start_row, end_row in ranges:
+            for rg_i in range(n_rg):
+                rg_start = rg_cumsum[rg_i]
+                rg_end = rg_cumsum[rg_i + 1]
 
-            # Skip if this row group is entirely outside the range.
-            if rg_end <= start_row or rg_start >= end_row:
-                continue
+                # Skip if this row group is entirely outside the range.
+                if rg_end <= start_row or rg_start >= end_row:
+                    continue
 
-            # Compute overlap: which rows within this row group to read.
-            local_start = max(0, start_row - rg_start)
-            local_end = min(rg_end - rg_start, end_row - rg_start)
+                local_start = max(0, start_row - rg_start)
+                local_end = min(rg_end - rg_start, end_row - rg_start)
+                local_len = local_end - local_start
+                if local_len <= 0:
+                    continue
 
-            # Read the row group and slice to the needed rows.
+                rg_slices.setdefault(rg_i, []).append((local_start, local_len))
+
+        # Read each row group once and extract all needed slices.
+        for rg_i in sorted(rg_slices.keys()):
             table = pf.read_row_group(rg_i)
-            table = table.slice(local_start, local_end - local_start)
+            slices = rg_slices[rg_i]
 
-            for batch in table.to_batches(max_chunksize=self.batch_size):
+            if len(slices) == 1:
+                selected = table.slice(slices[0][0], slices[0][1])
+            else:
+                parts = [table.slice(s, l) for s, l in slices]
+                selected = pa.concat_tables(parts)
+
+            for batch in selected.to_batches(max_chunksize=self.batch_size):
                 yield self._convert_batch(batch)
+
 
     def _flush_buffer(
         self, buffer: List[Dict[str, Any]]
