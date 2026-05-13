@@ -61,6 +61,8 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     args.data_dir = os.environ.get('TRAIN_DATA_PATH', args.data_dir)
     args.log_dir = os.environ.get('TRAIN_LOG_PATH', args.log_dir)
+    if not args.log_dir:
+        args.log_dir = args.data_dir  # default to data dir for error files
 
     if not args.data_dir:
         parser.error("--data_dir or TRAIN_DATA_PATH is required")
@@ -449,8 +451,14 @@ def main() -> None:
 
     seq_cols_in_schema = [c for c in schema_names if c in seq_col_set]
 
+    log.info(f"  Found {len(seq_cols_in_schema)} sequence columns to analyze:")
+    for c in sorted(seq_cols_in_schema):
+        log.info(f"    {c}")
+
     # Process one column at a time to avoid OOM
-    for f, rg_idx, n_rows in rg_list:
+    for i, (f, rg_idx, n_rows) in enumerate(rg_list):
+        if i == 0:
+            log.info(f"  Processing {len(rg_list)} row groups...")
         pf = pq.ParquetFile(f)
         available = [c for c in seq_cols_in_schema if c in pf.schema_arrow.names]
         if not available:
