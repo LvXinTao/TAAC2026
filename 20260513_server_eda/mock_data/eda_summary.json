@@ -1,0 +1,14 @@
+{
+  "total_rows": 500,
+  "total_rgs": 2,
+  "n_train_rgs": 1,
+  "n_valid_rgs": 1,
+  "train_rows": 250,
+  "valid_rows": 250,
+  "click_count": 448,
+  "conversion_count": 52,
+  "positive_rate": 0.104,
+  "unique_users": 179,
+  "unique_items": 49,
+  "mean_delay": 77694.7
+}
