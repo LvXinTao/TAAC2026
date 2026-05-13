@@ -348,7 +348,7 @@ def main() -> None:
 
             elif st['type'] == 'list':
                 valid_mask = col.is_valid()
-                if valid_mask.any():
+                if valid_mask.to_numpy().any():
                     offsets = col.offsets.to_numpy()
                     vm = valid_mask.to_numpy()
                     starts = offsets[:-1][vm]
@@ -446,7 +446,7 @@ def main() -> None:
                 s['total_count'] += len(col)
 
                 valid_mask = col.is_valid()
-                if valid_mask.any():
+                if valid_mask.to_numpy().any():
                     offsets = col.offsets.to_numpy()
                     values = col.values.to_numpy()
                     vm = valid_mask.to_numpy()
