@@ -117,10 +117,10 @@ def main() -> None:
     with open(args.schema_path, 'r') as f:
         schema = json.load(f)
 
-    # Build column sets from schema
+    # Build sequence column set (to exclude from Section 5)
     seq_cfg = schema.get('seq', {})
     seq_col_set = set()
-    for domain, cfg in seq_cfg.items():
+    for _domain, cfg in seq_cfg.items():
         prefix = cfg['prefix']
         for fid, _ in cfg['features']:
             seq_col_set.add(f'{prefix}_{fid}')
@@ -432,123 +432,6 @@ def main() -> None:
         col_stats[c].pop('seen_values', None)
         col_stats[c].pop('lengths', None)
 
-    # ── Section 6: Sequence Feature Statistics ──────────────────────────
-    log.info(section_header("Section 6: Sequence Feature Statistics"))
-
-    seq_stats = {}
-    for domain, cfg in sorted(seq_cfg.items()):
-        prefix = cfg['prefix']
-        seq_stats[domain] = {}
-        for fid, _ in cfg['features']:
-            col_name = f'{prefix}_{fid}'
-            if col_name not in schema_names:
-                continue
-            seq_stats[domain][col_name] = {
-                'null_count': 0, 'total_count': 0,
-                'lengths': [], 'value_counter': Counter(),
-                'val_min': None, 'val_max': None,
-            }
-
-    seq_cols_in_schema = [c for c in schema_names if c in seq_col_set]
-
-    log.info(f"  Found {len(seq_cols_in_schema)} sequence columns to analyze:")
-    for c in sorted(seq_cols_in_schema):
-        log.info(f"    {c}")
-
-    seq_first_error_logged = False
-
-    # Process one column at a time to avoid OOM
-    for i, (f, rg_idx, n_rows) in enumerate(rg_list):
-        if i == 0:
-            log.info(f"  Processing {len(rg_list)} row groups...")
-        pf = pq.ParquetFile(f)
-        available = [c for c in seq_cols_in_schema if c in pf.schema_arrow.names]
-        if not available:
-            continue
-
-        for col_name in available:
-            table = pf.read_row_group(rg_idx, columns=[col_name])
-            if col_name not in table.column_names:
-                continue
-
-            col = table.column(col_name)
-
-            # Find which domain/stat this belongs to
-            for domain, cols in seq_stats.items():
-                if col_name not in cols:
-                    continue
-                s = cols[col_name]
-                s['null_count'] += col.null_count
-                s['total_count'] += len(col)
-
-                try:
-                    arr = col.combine_chunks()
-                    valid_mask = arr.is_valid().to_numpy(zero_copy_only=False)
-                    if not valid_mask.any():
-                        break
-
-                    offsets = arr.offsets.to_numpy()
-                    values = arr.values.to_numpy()
-                    starts = offsets[:-1][valid_mask]
-                    ends = offsets[1:][valid_mask]
-                    lens = (ends - starts).tolist()
-                    s['lengths'].extend(lens)
-
-                    # Cap value counting to avoid OOM
-                    if len(s['value_counter']) < 100000:
-                        all_vals = values.tolist()
-                        s['value_counter'].update(all_vals[:200000])
-
-                    v_min = int(values.min())
-                    v_max = int(values.max())
-                    if s['val_min'] is None or v_min < s['val_min']:
-                        s['val_min'] = v_min
-                    if s['val_max'] is None or v_max > s['val_max']:
-                        s['val_max'] = v_max
-                except Exception as e:
-                    if not seq_first_error_logged:
-                        seq_first_error_logged = True
-                        log.error(f"Sequence error: {e} in {col_name} (rg={rg_idx}, type={col.type})")
-                        log.error(f"  null_count={col.null_count}, len={len(col)}, n_chunks={col.num_chunks}")
-                        if col.num_chunks > 0:
-                            log.error(f"  chunk[0] type={col.chunk(0).type}, len={len(col.chunk(0))}")
-                    break
-                break
-                break  # only belongs to one domain
-
-            del table  # free memory per column
-
-    # Output per domain
-    for domain in sorted(seq_stats.keys()):
-        cols = seq_stats[domain]
-        log.info(f"\n  Domain {domain} ({len(cols)} features):")
-
-        for col_name in sorted(cols.keys()):
-            s = cols[col_name]
-            null_pct = s['null_count'] / s['total_count'] * 100 if s['total_count'] > 0 else 0
-            fid = col_name.rsplit('_', 1)[-1]
-
-            lens = s['lengths']
-            len_info = ""
-            if lens:
-                len_info = (f"  len: mean={np.mean(lens):.0f}, "
-                           f"median={np.median(lens):.0f}, "
-                           f"max={max(lens):,}")
-
-            val_info = ""
-            if s['val_min'] is not None:
-                val_info = f"  vals: [{s['val_min']}, {s['val_max']}], "
-                val_info += f"unique~{len(s['value_counter']):,}"
-                top3 = s['value_counter'].most_common(3)
-                val_info += f", top3={top3}"
-
-            log.info(f"    fid={fid:>4s}: null={null_pct:.1f}%{len_info}  {val_info}")
-
-    # Cleanup
-    for domain in seq_stats:
-        for col_name in seq_stats[domain]:
-            seq_stats[domain][col_name].pop('value_counter', None)
-            seq_stats[domain][col_name].pop('lengths', None)
 
     # ── Summary JSON ────────────────────────────────────────────────────
     if args.log_dir:
