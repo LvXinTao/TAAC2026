@@ -430,42 +430,54 @@ def main() -> None:
 
     seq_cols_in_schema = [c for c in schema_names if c in seq_col_set]
 
+    # Process one column at a time to avoid OOM
     for f, rg_idx, n_rows in rg_list:
         pf = pq.ParquetFile(f)
         available = [c for c in seq_cols_in_schema if c in pf.schema_arrow.names]
         if not available:
             continue
-        table = pf.read_row_group(rg_idx, columns=available)
 
-        for domain, cols in seq_stats.items():
-            for col_name, s in cols.items():
-                if col_name not in table.column_names:
+        for col_name in available:
+            table = pf.read_row_group(rg_idx, columns=[col_name])
+            if col_name not in table.column_names:
+                continue
+
+            col = table.column(col_name)
+
+            # Find which domain/stat this belongs to
+            for domain, cols in seq_stats.items():
+                if col_name not in cols:
                     continue
-                col = table.column(col_name)
+                s = cols[col_name]
                 s['null_count'] += col.null_count
                 s['total_count'] += len(col)
 
                 arr = col.combine_chunks()
                 valid_mask = arr.is_valid().to_numpy(zero_copy_only=False)
-                if valid_mask.any():
-                    offsets = arr.offsets.to_numpy()
-                    values = arr.values.to_numpy()
-                    starts = offsets[:-1][valid_mask]
-                    ends = offsets[1:][valid_mask]
-                    lens = (ends - starts).tolist()
-                    s['lengths'].extend(lens)
+                if not valid_mask.any():
+                    break
 
-                    # Cap value counting to avoid OOM
-                    if len(s['value_counter']) < 100000:
-                        all_vals = values.tolist()
-                        s['value_counter'].update(all_vals[:200000])
+                offsets = arr.offsets.to_numpy()
+                values = arr.values.to_numpy()
+                starts = offsets[:-1][valid_mask]
+                ends = offsets[1:][valid_mask]
+                lens = (ends - starts).tolist()
+                s['lengths'].extend(lens)
 
-                    v_min = int(values.min())
-                    v_max = int(values.max())
-                    if s['val_min'] is None or v_min < s['val_min']:
-                        s['val_min'] = v_min
-                    if s['val_max'] is None or v_max > s['val_max']:
-                        s['val_max'] = v_max
+                # Cap value counting to avoid OOM
+                if len(s['value_counter']) < 100000:
+                    all_vals = values.tolist()
+                    s['value_counter'].update(all_vals[:200000])
+
+                v_min = int(values.min())
+                v_max = int(values.max())
+                if s['val_min'] is None or v_min < s['val_min']:
+                    s['val_min'] = v_min
+                if s['val_max'] is None or v_max > s['val_max']:
+                    s['val_max'] = v_max
+                break  # only belongs to one domain
+
+            del table  # free memory per column
 
     # Output per domain
     for domain in sorted(seq_stats.keys()):
