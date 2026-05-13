@@ -2,6 +2,17 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH}"
 
+DATA_DIR="${TRAIN_DATA_PATH:-.}"
+SPLIT_MAP="${DATA_DIR}/time_split_map.json"
+
+# Generate time split map if not present (run once, reusable)
+if [ ! -f "$SPLIT_MAP" ]; then
+    echo "time_split_map.json not found, generating from ${DATA_DIR}..."
+    python3 -u "${SCRIPT_DIR}/make_time_split.py" \
+        --data_dir "${DATA_DIR}" \
+        --output "${SPLIT_MAP}"
+fi
+
 # ---- Active config: RankMixer NS tokenizer (no ns_groups.json required) ----
 python3 -u "${SCRIPT_DIR}/train.py" \
     --ns_tokenizer_type rankmixer \
@@ -11,6 +22,7 @@ python3 -u "${SCRIPT_DIR}/train.py" \
     --ns_groups_json "" \
     --emb_skip_threshold 1000000 \
     --num_workers 8 \
+    --time_split_map "${SPLIT_MAP}" \
     "$@"
 
 # ---- Alternative config: GroupNSTokenizer driven by ns_groups.json ----
@@ -25,4 +37,5 @@ python3 -u "${SCRIPT_DIR}/train.py" \
 #     --num_queries 1 \
 #     --emb_skip_threshold 1000000 \
 #     --num_workers 8 \
+#     --time_split_map "${SPLIT_MAP}" \
 #     "$@"
