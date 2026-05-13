@@ -3,9 +3,10 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH}"
 
 DATA_DIR="${TRAIN_DATA_PATH:-.}"
-SPLIT_MAP="${DATA_DIR}/time_split_map.json"
+SPLIT_MAP="${SCRIPT_DIR}/time_split_map.json"
 
 # Generate time split map if not present (run once, reusable)
+# Output goes to SCRIPT_DIR (writable) since DATA_DIR is read-only on the platform.
 if [ ! -f "$SPLIT_MAP" ]; then
     echo "time_split_map.json not found, generating from ${DATA_DIR}..."
     python3 -u "${SCRIPT_DIR}/make_time_split.py" \
