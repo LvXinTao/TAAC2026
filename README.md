@@ -21,8 +21,9 @@
 | 2026-05-12 | seq-timestamp-sideinfo | 0.22614 | 0.86749 | +0.00259 | 0.84216 | -0.00054 | per-token-ffn |
 | 2026-05-12 | token-specific-q | 0.22592 | 0.86862 | +0.00026 | 0.84152 | -0.00348 | timestamp_features |
 | 2026-05-13 | combined-timestamp | 0.22628 | 0.86843 | +0.00354 | 0.84099 | -0.00171 | per-token-ffn |
+| 2026-05-13 | combined-timestamp | 0.22628 | 0.86843 | +0.00354 | 0.84099 | -0.00171 | per-token-ffn |
 | 2026-05-13 | torch-compile | 0.22628 | 0.86773 | -0.00063 | 0.84514 | +0.00013 | timestamp-features |
-| 2026-05-13 | amp-training | 0.22588 | 0.86862 | +0.00025 | | | timestamp-features |
+| 2026-05-13 | amp-training | 0.22588 | 0.86862 | +0.00025 | 0.84492 | -0.00008 | timestamp-features |
 
 ## 训练与评估工具
 
