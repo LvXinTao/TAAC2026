@@ -465,6 +465,10 @@ class PCVRHyFormerRankingTrainer:
         all_logits = torch.cat(all_logits_list, dim=0)
         all_labels = torch.cat(all_labels_list, dim=0).long()
 
+        # Convert to FP32 for numpy/sklearn compatibility (autocast may produce BF16)
+        if all_logits.dtype == torch.bfloat16:
+            all_logits = all_logits.float()
+
         # Binary AUC via sklearn.
         probs = torch.sigmoid(all_logits).numpy()
         labels_np = all_labels.numpy()
