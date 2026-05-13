@@ -360,7 +360,8 @@ class PCVRParquetDataset(IterableDataset):
             self._seq_maxlen[domain] = seq_max_lens.get(domain, 256)
 
     def __len__(self) -> int:
-        # Ceiling per Row Group; this is an upper bound on the true batch count.
+        if self._row_ranges is not None:
+            return (self.num_rows + self.batch_size - 1) // self.batch_size
         return sum((n + self.batch_size - 1) // self.batch_size
                    for _, _, n in self._rg_list)
 
