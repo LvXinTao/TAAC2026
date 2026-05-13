@@ -55,40 +55,83 @@ def main() -> None:
     print(f"Split point: row {split_idx:,} (ts={train_cutoff_ts}, "
           f"{datetime.fromtimestamp(train_cutoff_ts)})")
 
-    # Step 4: Group by file into contiguous ranges.
-    def group_by_file(rows_in_split):
-        """Group sorted (ts, file, row_idx) into contiguous (file, start, end) ranges."""
-        ranges = []
-        if not rows_in_split:
-            return ranges
-        cur_file = rows_in_split[0][1]
-        cur_start = rows_in_split[0][2]
-        cur_end = cur_start
-        for ts, fpath, row_idx in rows_in_split[1:]:
-            if fpath == cur_file and row_idx == cur_end:
-                cur_end = row_idx + 1
-            else:
-                ranges.append((cur_file, cur_start, cur_end))
-                cur_file, cur_start, cur_end = fpath, row_idx, row_idx + 1
-        ranges.append((cur_file, cur_start, cur_end))
-        return ranges
+    # Step 4: Find timestamp cutoff, then split each file at that cutoff.
+    # After global sort, rows from the same file are scattered, so we cannot
+    # merge ranges in sorted order. Instead, find the cutoff timestamp, then
+    # for each file determine which rows go to train vs valid based on their
+    # individual timestamp — this yields at most 2 ranges per file.
 
-    train_ranges = group_by_file(all_rows[:split_idx])
-    valid_ranges = group_by_file(all_rows[split_idx:])
+    # Collect timestamps per file for cutoff-based splitting.
+    print("Building per-file split ranges...")
+    file_data = {}  # fpath -> (np.array timestamps, total_rows)
+    for fpath in pq_files:
+        table = pq.read_table(fpath, columns=['timestamp'])
+        ts = table.column('timestamp').to_numpy(zero_copy_only=False).astype(np.int64)
+        file_data[fpath] = ts
 
-    # Step 5: Build per-file JSON structure.
+    # Use the exact cutoff timestamp. Rows with ts < cutoff → train.
+    # Rows with ts == cutoff are split to achieve exact 90/10.
+    cutoff_ts = train_cutoff_ts
+    train_total = 0
+    valid_total = 0
     split = {}
-    for fpath, start, end in train_ranges:
-        if fpath not in split:
-            split[fpath] = {"train_rows": [], "valid_rows": []}
-        split[fpath]["train_rows"].append([start, end])
 
-    for fpath, start, end in valid_ranges:
-        if fpath not in split:
-            split[fpath] = {"train_rows": [], "valid_rows": []}
-        split[fpath]["valid_rows"].append([start, end])
+    # Count how many rows are exactly at the cutoff — we need to allocate
+    # some to train and the rest to valid to hit the exact split_idx.
+    rows_before = 0  # rows with ts < cutoff
+    rows_at = 0      # rows with ts == cutoff
+    for fpath, ts in file_data.items():
+        below = int((ts < cutoff_ts).sum())
+        at = int((ts == cutoff_ts).sum())
+        rows_before += below
+        rows_at += at
 
-    # Step 6: Write output.
+    # We need exactly split_idx rows in train. We already have rows_before
+    # (ts < cutoff), so we need split_idx - rows_before more from the
+    # rows_at group.
+    from_at_to_train = split_idx - rows_before
+    assert 0 <= from_at_to_train <= rows_at, (
+        f"Invalid split: need {from_at_to_train} from {rows_at} rows at cutoff")
+
+    for fpath, ts in file_data.items():
+        below_mask = ts < cutoff_ts
+        at_mask = ts == cutoff_ts
+
+        # Train rows: all below cutoff + a fraction of those at cutoff.
+        # Merge into contiguous ranges.
+        train_mask = below_mask.copy()
+        if from_at_to_train > 0:
+            at_indices = np.where(at_mask)[0]
+            # Take the first N indices at cutoff for train.
+            need = min(from_at_to_train, len(at_indices))
+            for idx in at_indices[:need]:
+                train_mask[idx] = True
+                from_at_to_train -= 1
+
+        valid_mask = ~train_mask
+
+        def to_ranges(mask):
+            """Convert boolean mask to list of contiguous (start, end) ranges."""
+            ranges = []
+            start = None
+            for i in range(len(mask)):
+                if mask[i]:
+                    if start is None:
+                        start = i
+                else:
+                    if start is not None:
+                        ranges.append([start, i])
+                        start = None
+            if start is not None:
+                ranges.append([start, len(mask)])
+            return ranges
+
+        tr = to_ranges(train_mask)
+        vr = to_ranges(valid_mask)
+        if tr or vr:
+            split[fpath] = {"train_rows": tr, "valid_rows": vr}
+
+    # Recompute totals from masks (cleaner than accumulating above).
     train_total = split_idx
     valid_total = total - split_idx
     output = {
@@ -106,10 +149,9 @@ def main() -> None:
         json.dump(output, f, indent=2)
 
     print(f"\nWritten to {args.output}")
-    print(f"  Train: {train_total:,} rows in {len(train_ranges)} ranges "
-          f"across {len(set(r[0] for r in train_ranges))} files")
-    print(f"  Valid: {valid_total:,} rows in {len(valid_ranges)} ranges "
-          f"across {len(set(r[0] for r in valid_ranges))} files")
+    print(f"  Train: {train_total:,} rows")
+    print(f"  Valid: {valid_total:,} rows")
+    print(f"  Files with split ranges: {len(split)}")
 
 
 if __name__ == "__main__":
