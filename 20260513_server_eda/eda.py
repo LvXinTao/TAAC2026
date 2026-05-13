@@ -22,6 +22,7 @@ from datetime import datetime
 from collections import Counter
 
 import numpy as np
+import pyarrow as pa
 import pyarrow.parquet as pq
 
 logging.basicConfig(
@@ -310,8 +311,6 @@ def main() -> None:
             col_type = 'list' if is_list else 'scalar'
 
         init_col_stats(col_name, col_type)
-
-    import pyarrow as pa
 
     # Streaming accumulation
     for f, rg_idx, n_rows in rg_list:
