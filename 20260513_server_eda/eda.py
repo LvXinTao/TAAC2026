@@ -18,12 +18,23 @@ import json
 import argparse
 import glob
 import logging
+import traceback
 from datetime import datetime
 from collections import Counter
 
 import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
+
+log_dir_for_error = None  # will be set in main()
+
+def _write_error_file(msg: str):
+    """Write error details to a file so they're accessible when logs are truncated."""
+    if log_dir_for_error and os.path.isdir(log_dir_for_error):
+        path = os.path.join(log_dir_for_error, 'eda_error.txt')
+        with open(path, 'w') as f:
+            f.write(msg)
+        print(f"[EDA] Error details also written to {path}", file=sys.stderr)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -69,7 +80,10 @@ def section_header(title: str) -> str:
 
 
 def main() -> None:
+    global log_dir_for_error
+
     args = parse_args()
+    log_dir_for_error = args.log_dir
     log.info(f"EDA starting: data_dir={args.data_dir}")
     log.info(f"  schema_path={args.schema_path}")
     log.info(f"  log_dir={args.log_dir}")
@@ -124,7 +138,6 @@ def main() -> None:
     est_total_mb = (per_row_bytes * total_rows) / (1024 * 1024)
     log.info(f"  Est. memory:    ~{est_total_mb:.0f} MB ({per_row_bytes:.0f} bytes/row x {total_rows:,} rows)")
 
-    log.info(f"\n  File breakdown:")
     file_stats = {}
     for f, rg_idx, n_rows in rg_list:
         fname = os.path.basename(f)
@@ -132,8 +145,14 @@ def main() -> None:
             file_stats[fname] = {'rgs': 0, 'rows': 0}
         file_stats[fname]['rgs'] += 1
         file_stats[fname]['rows'] += n_rows
-    for fname, st in sorted(file_stats.items()):
+
+    log.info(f"\n  File breakdown (first 10 / last 5 of {len(file_stats)} files):")
+    items = sorted(file_stats.items())
+    show = items[:10] + items[-5:] if len(items) > 15 else items
+    for fname, st in show:
         log.info(f"    {fname:40s}: {st['rgs']:4d} RGs, {st['rows']:>10,} rows")
+    if len(items) > 15:
+        log.info(f"    ... ({len(items) - 15} files omitted for brevity)")
 
     # ── Section 2: Time Range ───────────────────────────────────────────
     log.info(section_header("Section 2: Time Range"))
@@ -537,4 +556,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        tb = traceback.format_exc()
+        _write_error_file(f"{type(e).__name__}: {e}\n\n{tb}")
+        log.error(f"FATAL ERROR: {type(e).__name__}: {e}")
+        log.error(f"Traceback:\n{tb}")
+        sys.exit(1)
