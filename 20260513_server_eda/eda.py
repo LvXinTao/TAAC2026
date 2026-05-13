@@ -455,6 +455,8 @@ def main() -> None:
     for c in sorted(seq_cols_in_schema):
         log.info(f"    {c}")
 
+    seq_first_error_logged = False
+
     # Process one column at a time to avoid OOM
     for i, (f, rg_idx, n_rows) in enumerate(rg_list):
         if i == 0:
@@ -479,29 +481,39 @@ def main() -> None:
                 s['null_count'] += col.null_count
                 s['total_count'] += len(col)
 
-                arr = col.combine_chunks()
-                valid_mask = arr.is_valid().to_numpy(zero_copy_only=False)
-                if not valid_mask.any():
+                try:
+                    arr = col.combine_chunks()
+                    valid_mask = arr.is_valid().to_numpy(zero_copy_only=False)
+                    if not valid_mask.any():
+                        break
+
+                    offsets = arr.offsets.to_numpy()
+                    values = arr.values.to_numpy()
+                    starts = offsets[:-1][valid_mask]
+                    ends = offsets[1:][valid_mask]
+                    lens = (ends - starts).tolist()
+                    s['lengths'].extend(lens)
+
+                    # Cap value counting to avoid OOM
+                    if len(s['value_counter']) < 100000:
+                        all_vals = values.tolist()
+                        s['value_counter'].update(all_vals[:200000])
+
+                    v_min = int(values.min())
+                    v_max = int(values.max())
+                    if s['val_min'] is None or v_min < s['val_min']:
+                        s['val_min'] = v_min
+                    if s['val_max'] is None or v_max > s['val_max']:
+                        s['val_max'] = v_max
+                except Exception as e:
+                    if not seq_first_error_logged:
+                        seq_first_error_logged = True
+                        log.error(f"Sequence error: {e} in {col_name} (rg={rg_idx}, type={col.type})")
+                        log.error(f"  null_count={col.null_count}, len={len(col)}, n_chunks={col.num_chunks}")
+                        if col.num_chunks > 0:
+                            log.error(f"  chunk[0] type={col.chunk(0).type}, len={len(col.chunk(0))}")
                     break
-
-                offsets = arr.offsets.to_numpy()
-                values = arr.values.to_numpy()
-                starts = offsets[:-1][valid_mask]
-                ends = offsets[1:][valid_mask]
-                lens = (ends - starts).tolist()
-                s['lengths'].extend(lens)
-
-                # Cap value counting to avoid OOM
-                if len(s['value_counter']) < 100000:
-                    all_vals = values.tolist()
-                    s['value_counter'].update(all_vals[:200000])
-
-                v_min = int(values.min())
-                v_max = int(values.max())
-                if s['val_min'] is None or v_min < s['val_min']:
-                    s['val_min'] = v_min
-                if s['val_max'] is None or v_max > s['val_max']:
-                    s['val_max'] = v_max
+                break
                 break  # only belongs to one domain
 
             del table  # free memory per column
