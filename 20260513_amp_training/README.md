@@ -2,6 +2,24 @@
 
 AMP (Automatic Mixed Precision) training with BF16 for training speedup.
 
+## Results
+
+| Metric | timestamp-features (FP32) | amp-training (BF16) | delta |
+|--------|--------------------------|---------------------|-------|
+| val/LogLoss | 0.22584 | 0.22588 | -0.00004 |
+| val/AUC | 0.86837 | 0.86862 | +0.00025 |
+| test/AUC | 0.84501 | 0.84492 | -0.00008 |
+
+### 训练速度对比
+
+| | timestamp-features (FP32) | amp-training (BF16) | 提升 |
+|---|---|---|---|
+| 完成 epochs | 9 | 8 | - |
+| 总训练时间 | 13h21m | 5h03m | **2.6x** |
+| 每 epoch 时间 | ~88.7 min | ~38.2 min | **2.3x** |
+
+AMP BF16 训练速度提升约 **2.3x**（每 epoch），精度基本无损（test AUC 差距仅 0.00008）。
+
 ## Changes
 
 - **train.py**: Added `--amp` CLI flag to enable BF16 autocast training
