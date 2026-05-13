@@ -348,12 +348,11 @@ def main() -> None:
 
             elif st['type'] == 'list':
                 arr = col.combine_chunks()
-                valid_mask = arr.is_valid()
-                if valid_mask.to_numpy().any():
+                valid_mask = arr.is_valid().to_numpy(zero_copy_only=False)
+                if valid_mask.any():
                     offsets = arr.offsets.to_numpy()
-                    vm = valid_mask.to_numpy()
-                    starts = offsets[:-1][vm]
-                    ends = offsets[1:][vm]
+                    starts = offsets[:-1][valid_mask]
+                    ends = offsets[1:][valid_mask]
                     lens = (ends - starts).tolist()
                     st['lengths'].extend(lens)
 
@@ -447,13 +446,12 @@ def main() -> None:
                 s['total_count'] += len(col)
 
                 arr = col.combine_chunks()
-                valid_mask = arr.is_valid()
-                if valid_mask.to_numpy().any():
+                valid_mask = arr.is_valid().to_numpy(zero_copy_only=False)
+                if valid_mask.any():
                     offsets = arr.offsets.to_numpy()
                     values = arr.values.to_numpy()
-                    vm = valid_mask.to_numpy()
-                    starts = offsets[:-1][vm]
-                    ends = offsets[1:][vm]
+                    starts = offsets[:-1][valid_mask]
+                    ends = offsets[1:][valid_mask]
                     lens = (ends - starts).tolist()
                     s['lengths'].extend(lens)
 
