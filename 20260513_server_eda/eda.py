@@ -347,9 +347,10 @@ def main() -> None:
                         st['max'] = v_max
 
             elif st['type'] == 'list':
-                valid_mask = col.is_valid()
+                arr = col.combine()
+                valid_mask = arr.is_valid()
                 if valid_mask.to_numpy().any():
-                    offsets = col.offsets.to_numpy()
+                    offsets = arr.offsets.to_numpy()
                     vm = valid_mask.to_numpy()
                     starts = offsets[:-1][vm]
                     ends = offsets[1:][vm]
@@ -445,10 +446,11 @@ def main() -> None:
                 s['null_count'] += col.null_count
                 s['total_count'] += len(col)
 
-                valid_mask = col.is_valid()
+                arr = col.combine()
+                valid_mask = arr.is_valid()
                 if valid_mask.to_numpy().any():
-                    offsets = col.offsets.to_numpy()
-                    values = col.values.to_numpy()
+                    offsets = arr.offsets.to_numpy()
+                    values = arr.values.to_numpy()
                     vm = valid_mask.to_numpy()
                     starts = offsets[:-1][vm]
                     ends = offsets[1:][vm]
