@@ -314,8 +314,8 @@ def main() -> None:
     model = PCVRHyFormer(**model_args).to(args.device)
 
     if args.use_torch_compile:
-        logging.info("Compiling model with torch.compile(mode='reduce-overhead')...")
-        model = torch.compile(model, mode="reduce-overhead")
+        logging.info("Compiling model with torch.compile(mode='default')...")
+        model = torch.compile(model, mode="default")
 
     # Log model sizing info.
     num_sequences = len(pcvr_dataset.seq_domains)
