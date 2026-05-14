@@ -24,6 +24,7 @@
 | 2026-05-13 | combined-timestamp | 0.22628 | 0.86843 | +0.00354 | 0.84099 | -0.00171 | per-token-ffn |
 | 2026-05-13 | torch-compile | 0.22628 | 0.86773 | -0.00063 | 0.84514 | +0.00013 | timestamp-features |
 | 2026-05-13 | amp-training | 0.22588 | 0.86862 | +0.00025 | 0.84492 | -0.00008 | timestamp-features |
+| 2026-05-14 | time-split | 0.279 | 0.837 | -0.031 | 0.83447 | -0.011 | timestamp-features |
 
 ## 训练与评估工具
 

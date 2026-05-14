@@ -9,3 +9,4 @@ date,name,val/LogLoss,val/AUC,val/delta_AUC,test/AUC,test/delta_AUC,baseline
 2026-05-13,20260512_combined_timestamp,0.22628362476825714,0.8684326410293579,+0.00354,0.840990,-0.00171,per-token-ffn
 2026-05-13,20260513_torch_compile,0.226283,0.867732,-0.00063,0.845137,+0.00013,timestamp-features
 2026-05-13,20260513_amp_training,0.2258773148059845,0.8686180710792542,+0.00025,0.844924,-0.00008,timestamp_features
+2026-05-14,20260513_time_split,0.279,0.837,-0.031,0.834474,-0.011,timestamp-features
