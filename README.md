@@ -24,6 +24,8 @@
 | 2026-05-13 | torch-compile | 0.22628 | 0.86773 | -0.00063 | 0.84514 | +0.00013 | timestamp-features |
 | 2026-05-13 | amp-training | 0.22588 | 0.86862 | +0.00025 | 0.84492 | -0.00008 | timestamp-features |
 | 2026-05-14 | time-split | 0.279 | 0.837 | -0.031 | 0.83447 | -0.011 | timestamp-features |
+| 2026-05-14 | amp-torch-compile | 0.22555 | 0.86848 | +0.00011 | 0.83943 | -0.00558 | timestamp-features |
+| 2026-05-14 | amp-torch-compile-default | 0.22640 | 0.86846 | +0.00009 | 0.84091 | -0.00410 | timestamp-features |
 
 ## 训练与评估工具
 
