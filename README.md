@@ -26,6 +26,8 @@
 | 2026-05-14 | time-split | 0.279 | 0.837 | -0.031 | 0.83447 | -0.011 | timestamp-features |
 | 2026-05-14 | amp-torch-compile | 0.22555 | 0.86848 | +0.00011 | 0.83943 | -0.00558 | timestamp-features |
 | 2026-05-14 | amp-torch-compile-default | 0.22640 | 0.86846 | +0.00009 | 0.84091 | -0.00410 | timestamp-features |
+| 2026-05-14 | warmup-weight-decay | | | | | | timestamp-features |
+| 2026-05-15 | muon-optimizer | 0.23348 | 0.86111 | -0.00726 | 0.82279 | -0.02222 | timestamp-features |
 
 ## 训练与评估工具
 
