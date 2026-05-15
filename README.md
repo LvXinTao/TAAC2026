@@ -28,6 +28,7 @@
 | 2026-05-14 | amp-torch-compile-default | 0.22640 | 0.86846 | +0.00009 | 0.84091 | -0.00410 | timestamp-features |
 | 2026-05-14 | warmup-weight-decay | 0.22574 | 0.86901 | +0.00064 | 0.84647 | +0.00146 | timestamp-features |
 | 2026-05-15 | muon-optimizer | 0.23348 | 0.86111 | -0.00726 | 0.82279 | -0.02222 | timestamp-features |
+| 2026-05-15 | wd005-warmup500 | | | | | | timestamp-features |
 
 ## 训练与评估工具
 
