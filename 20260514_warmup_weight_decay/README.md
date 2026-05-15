@@ -33,3 +33,16 @@
 ### 基础
 
 本实验基于 `20260510_timestamp_features`（hour + day_of_week 时间特征）代码。
+
+### 实验结果
+
+| val/LogLoss | val/AUC | val/delta_AUC | test/AUC | test/delta_AUC |
+|-------------|---------|---------------|----------|----------------|
+| 0.22574 | 0.86901 | +0.00064 | 0.84647 | +0.00146 |
+
+对比 `timestamp-features`（val AUC 0.86837, test AUC 0.84501）：
+- **val AUC** 提升 +0.00064（0.86837 → 0.86901）
+- **test AUC** 提升 +0.00146（0.84501 → 0.84647）
+- **val/test gap** 从 0.02336 缩小到 0.02254（改善 ~0.0008）
+
+Weight decay 0.01 + LR warmup 100 steps 对 test 泛化有一定帮助，val/test 差距略有缩小。
