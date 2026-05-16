@@ -21,13 +21,13 @@
 | 2026-05-13 | combined-timestamp | 0.22628 | 0.86843 | +0.00354 | 0.84099 | -0.00171 | per-token-ffn |
 | 2026-05-13 | torch-compile | 0.22628 | 0.86773 | -0.00063 | 0.84514 | +0.00013 | timestamp-features |
 | 2026-05-13 | amp-training | 0.22588 | 0.86862 | +0.00025 | 0.84492 | -0.00008 | timestamp-features |
-| 2026-05-13 | amp-training | 0.22588 | 0.86862 | +0.00025 | 0.84492 | -0.00008 | timestamp-features |
 | 2026-05-14 | time-split | 0.279 | 0.837 | -0.031 | 0.83447 | -0.011 | timestamp-features |
 | 2026-05-14 | amp-torch-compile | 0.22555 | 0.86848 | +0.00011 | 0.83943 | -0.00558 | timestamp-features |
 | 2026-05-14 | amp-torch-compile-default | 0.22640 | 0.86846 | +0.00009 | 0.84091 | -0.00410 | timestamp-features |
 | 2026-05-15 | muon-optimizer | 0.23348 | 0.86111 | -0.00726 | 0.82279 | -0.02222 | timestamp-features |
 | 2026-05-15 | warmup-weight-decay | 0.22574 | 0.86901 | +0.00064 | 0.84647 | +0.00146 | timestamp-features |
 | 2026-05-15 | wd005-warmup500 | 0.22704 | 0.86815 | +0.00025 | 0.84602 | +0.00102 | timestamp-features |
+| 2026-05-16 | amp-warmup-wd | 0.22593 | 0.86823 | +0.00025 | 0.84372 | -0.00129 | timestamp-features |
 
 每次新实验完成后，将结果追加到 `exp_result.csv` 并同时更新本节表格。
 
