@@ -7,6 +7,24 @@
 - **Weight Decay**：dense 参数正则化，减少过拟合
 - **LR Warmup**：前 N 步线性预热学习率，避免初期梯度不稳定
 
+## Results
+
+| Metric | timestamp-features | warmup-weight-decay | amp-warmup-wd | delta (vs timestamp) |
+|--------|-------------------|---------------------|---------------|---------------------|
+| val/LogLoss | 0.22584 | 0.22574 | 0.22593 | -0.00009 |
+| val/AUC | 0.86837 | 0.86901 | 0.86823 | -0.00014 |
+| test/AUC | 0.84501 | 0.84647 | 0.84372 | -0.00129 |
+
+AMP + warmup + weight decay 的组合反而导致 test AUC 下降，不如单独使用 warmup+weight decay。
+可能的原因：BF16 训练精度损失与 weight decay 叠加后对模型收敛产生负面影响。
+
+## 训练配置
+
+- weight_decay: 0.01
+- warmup_steps: 100
+- AMP: enabled (--amp)
+- GPU: 2
+
 ## Changes
 
 - **train.py**: 新增 `--weight_decay` 和 `--warmup_steps` 两个 CLI 参数
