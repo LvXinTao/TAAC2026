@@ -29,6 +29,7 @@
 | 2026-05-14 | warmup-weight-decay | 0.22574 | 0.86901 | +0.00064 | 0.84647 | +0.00146 | timestamp-features |
 | 2026-05-15 | muon-optimizer | 0.23348 | 0.86111 | -0.00726 | 0.82279 | -0.02222 | timestamp-features |
 | 2026-05-15 | wd005-warmup500 | 0.22704 | 0.86815 | +0.00025 | 0.84602 | +0.00102 | timestamp-features |
+| 2026-05-16 | amp-warmup-wd | 0.22593 | 0.86823 | +0.00025 | 0.84372 | -0.00129 | timestamp-features |
 
 ## 训练与评估工具
 
