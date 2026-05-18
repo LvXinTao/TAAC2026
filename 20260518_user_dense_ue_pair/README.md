@@ -34,3 +34,14 @@ USER_INT_DENSE_PAIR_FIDS=62,63,64,65,66
 ```bash
 USER_DENSE_UE_FIDS="" USER_INT_DENSE_PAIR_FIDS="" bash run.sh  # 回退到原始 baseline
 ```
+
+## 实验结果
+
+- **Checkpoint**: `global_step38050` (early stopping best model, epoch 5)
+- **Val AUC**: 0.86701 (+0.00274 vs baseline)
+- **Val LogLoss**: 0.22702
+- **Test AUC**: 0.84191 (+0.00006 vs baseline)
+- **Inference time**: 359.29s
+
+> 注意：本实验基于 `baseline/`（不含 timestamp 特征），test AUC 仅 +0.00006，提升微弱。
+> 对比含 timestamp 的实验（如 warmup-weight-decay: 0.84647），timestamp 特征的贡献更大。
