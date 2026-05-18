@@ -1,0 +1,516 @@
+2026-05-16 22:10:30.252 ##########################################################################
+
+2026-05-16 22:10:30.253 ############################ TAIJI JOB START #############################
+
+2026-05-16 22:10:30.253 ##########################################################################
+
+2026-05-16 22:10:30.270 cp: cannot stat './/*': No such file or directory
+
+2026-05-16 22:10:30.279 passwd: password expiry information changed.
+
+2026-05-16 22:10:35.818 Complete setting taiji user.
+
+2026-05-16 22:10:41.618 update taiji environ ...
+
+2026-05-16 22:10:41.618 show args: --appName=8b0a75a49e2169c6019e2ff70b2d21c5 --projectName=external-ams-competition-2025 --module=pytorch --script=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/run.sh --script_archive=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/dataset.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/eda.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/model.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/ns_groups.json,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/test_mock_eda.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/train.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/trainer.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/utils.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/.taiji_run.json --script_args=
+
+2026-05-16 22:10:41.709 INFO:  ===begin to run init cmd===
+
+2026-05-16 22:10:41.709 INFO:  Export env: RUNTIME_SCRIPT_DIR=/home/taiji/dl/runtime/script
+
+2026-05-16 22:10:41.720 INFO:  Export env: RUNTIME_SCRIPT_SHARE_DIR=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/8b0a75a49e2169c6019e2ff70b2d21c5/pipeline/8b0a75a49e2169c6019e2ff70b2d21c5/share
+
+2026-05-16 22:10:41.720 INFO:  script_path  :/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/run.sh
+
+2026-05-16 22:10:41.722 INFO:  Success copy to /home/taiji/dl/runtime/script/run.sh
+
+2026-05-16 22:10:41.725 INFO:  Success copy to /home/taiji/dl/runtime/script/dataset.py
+
+2026-05-16 22:10:41.727 INFO:  Success copy to /home/taiji/dl/runtime/script/eda.py
+
+2026-05-16 22:10:41.729 INFO:  Success copy to /home/taiji/dl/runtime/script/model.py
+
+2026-05-16 22:10:41.731 INFO:  Success copy to /home/taiji/dl/runtime/script/ns_groups.json
+
+2026-05-16 22:10:41.733 INFO:  Success copy to /home/taiji/dl/runtime/script/test_mock_eda.py
+
+2026-05-16 22:10:41.735 INFO:  Success copy to /home/taiji/dl/runtime/script/train.py
+
+2026-05-16 22:10:41.737 INFO:  Success copy to /home/taiji/dl/runtime/script/trainer.py
+
+2026-05-16 22:10:41.740 INFO:  Success copy to /home/taiji/dl/runtime/script/utils.py
+
+2026-05-16 22:10:41.742 INFO:  Success copy to /home/taiji/dl/runtime/script/.taiji_run.json
+
+2026-05-16 22:10:41.742 INFO:  python path: /home/taiji/dl/runtime/script/dataset.py:/home/taiji/dl/runtime/script/eda.py:/home/taiji/dl/runtime/script/model.py:/home/taiji/dl/runtime/script/ns_groups.json:/home/taiji/dl/runtime/script/test_mock_eda.py:/home/taiji/dl/runtime/script/train.py:/home/taiji/dl/runtime/script/trainer.py:/home/taiji/dl/runtime/script/utils.py:/home/taiji/dl/runtime/script/.taiji_run.json
+
+2026-05-16 22:10:41.742 INFO:  Export env: TRAIN_CKPT_PATH=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/8b0a75a49e2169c6019e2ff70b2d21c5/ckpt
+
+2026-05-16 22:10:41.742 INFO:  Export env: TRAIN_TF_EVENTS_PATH=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/8b0a75a49e2169c6019e2ff70b2d21c5/events
+
+2026-05-16 22:10:41.742 INFO:  Export env: TRAIN_DATA_PATH=/data_ams/industrial_training_data
+
+2026-05-16 22:10:41.742 INFO:  Export env: TRAIN_USER=ams_2026_1029731852466346144
+
+2026-05-16 22:10:41.742 INFO:  Export env: TRAIN_LOG_PATH=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/8b0a75a49e2169c6019e2ff70b2d21c5/log
+
+2026-05-16 22:10:41.742 INFO:  Export env: TRAIN_CACHE_PATH=/apdcephfs_fsgm2/share_305170765/angel/groups/8/ams_2026_1029731852466346144
+
+2026-05-16 22:10:41.742 INFO:  Export env: USER_CACHE_PATH=/apdcephfs_fsgm2/share_305170765/angel/groups/8/ams_2026_1029731852466346144
+
+2026-05-16 22:10:41.742 INFO:  Export env: NP_BD_FLOW_PROJ=8064236
+
+2026-05-16 22:10:41.753 touch: cannot touch '/data/initCmdCompletedFile': No such file or directory
+
+2026-05-16 22:10:41.753 initCmd failed
+
+2026-05-16 22:10:41.753 [TAIJI] Starting sshd
+
+2026-05-16 22:10:42.775 [TAIJI] sshd started
+
+2026-05-16 22:10:42.775 [TAIJI] waiting for all peers to be ready...
+
+2026-05-16 22:10:44.060 Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 5.4.241-1-tlinux4-0017.7 x86_64)
+
+2026-05-16 22:10:44.060 
+
+2026-05-16 22:10:44.060  * Documentation:  https://help.ubuntu.com
+
+2026-05-16 22:10:44.060  * Management:     https://landscape.canonical.com
+
+2026-05-16 22:10:44.060  * Support:        https://ubuntu.com/pro
+
+2026-05-16 22:10:44.060 
+
+2026-05-16 22:10:44.060 This system has been minimized by removing packages and content that are
+
+2026-05-16 22:10:44.060 not required on a system that users do not log into.
+
+2026-05-16 22:10:44.060 
+
+2026-05-16 22:10:44.060 To restore this content, you can run the 'unminimize' command.
+
+2026-05-16 22:10:44.060 
+
+2026-05-16 22:10:44.060 The programs included with the Ubuntu system are free software;
+
+2026-05-16 22:10:44.060 the exact distribution terms for each program are described in the
+
+2026-05-16 22:10:44.060 individual files in /usr/share/doc/*/copyright.
+
+2026-05-16 22:10:44.060 
+
+2026-05-16 22:10:44.060 Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+
+2026-05-16 22:10:44.060 applicable law.
+
+2026-05-16 22:10:44.060 
+
+2026-05-16 22:10:45.199 [TAIJI] error log above can be ignored
+
+2026-05-16 22:10:45.204 [TAIJI] run command 1778940645 [/bin/bash -c "${start_script}"]
+
+2026-05-16 22:10:48.675 Complete setting network policy rules.
+
+2026-05-16 22:10:55.041 update taiji environ ...
+
+2026-05-16 22:10:55.041 show args: --appName=8b0a75a49e2169c6019e2ff70b2d21c5 --projectName=external-ams-competition-2025n --module=pytorch --script=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/run.sh --script_archive=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/dataset.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/eda.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/model.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/ns_groups.json,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/test_mock_eda.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/train.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/trainer.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/utils.py,/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/.taiji_run.json --script_args=
+
+2026-05-16 22:10:55.093 INFO:  ===begin to run starttorch cmd===
+
+2026-05-16 22:10:55.094 INFO:  runtime_script_share_dir is /apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/8b0a75a49e2169c6019e2ff70b2d21c5/pipeline/8b0a75a49e2169c6019e2ff70b2d21c5/share
+
+2026-05-16 22:10:55.094 INFO:  script_path  :/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/scripts/8b0a75a49e2169c6019e2ff70b2d21c5/run.sh
+
+2026-05-16 22:10:55.097 INFO:  framework is pytorch
+
+2026-05-16 22:10:55.097 INFO:  Run command: bash /home/taiji/dl/runtime/script/run.sh
+
+2026-05-16 22:10:55.097 INFO:  ====== Begin cmd ======
+
+2026-05-16 22:10:57.184 2026-05-16 22:10:57 [EDA] EDA starting: data_dir=/data_ams/industrial_training_data
+
+2026-05-16 22:10:57.184 2026-05-16 22:10:57 [EDA]   schema_path=/data_ams/industrial_training_data/schema.json
+
+2026-05-16 22:10:57.184 2026-05-16 22:10:57 [EDA]   log_dir=/apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/8b0a75a49e2169c6019e2ff70b2d21c5/log
+
+2026-05-16 22:10:57.184 2026-05-16 22:10:57 [EDA]   valid_ratio=0.1
+
+2026-05-16 22:10:57.186 2026-05-16 22:10:57 [EDA] Found 1000 parquet file(s)
+
+2026-05-16 22:10:57.703 2026-05-16 22:10:57 [EDA] Total: 2,099,956 rows in 1044 row groups
+
+2026-05-16 22:10:58.180 2026-05-16 22:10:58 [EDA] 
+
+2026-05-16 22:10:58.180 ======================================================================
+
+2026-05-16 22:10:58.180   Section 1: Data Scale
+
+2026-05-16 22:10:58.180 ======================================================================
+
+2026-05-16 22:10:58.180 2026-05-16 22:10:58 [EDA]   Parquet files:  1000
+
+2026-05-16 22:10:58.180 2026-05-16 22:10:58 [EDA]   Row groups:     1044
+
+2026-05-16 22:10:58.180 2026-05-16 22:10:58 [EDA]   Total rows:     2,099,956
+
+2026-05-16 22:10:58.181 2026-05-16 22:10:58 [EDA]   Est. memory:    ~777879 MB (388420 bytes/row x 2,099,956 rows)
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA] 
+
+2026-05-16 22:10:58.183   File breakdown (first 10 / last 5 of 1000 files):
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00000-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,141 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00001-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,140 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00002-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,138 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00003-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,137 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00004-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,142 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00005-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,144 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00006-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,142 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00007-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    2 RGs,      2,143 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00008-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,141 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00009-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,139 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00995-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,143 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00996-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,143 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00997-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    2 RGs,      2,137 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00998-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    2 RGs,      2,136 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     part-00999-5c83ca74-0974-444b-aa35-3c479e1b12a2-c000.gz.parquet:    1 RGs,      2,139 rows
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA]     ... (985 files omitted for brevity)
+
+2026-05-16 22:10:58.183 2026-05-16 22:10:58 [EDA] 
+
+2026-05-16 22:10:58.183 ======================================================================
+
+2026-05-16 22:10:58.183   Section 2: Time Range
+
+2026-05-16 22:10:58.183 ======================================================================
+
+2026-05-16 22:10:58.487 2026-05-16 22:10:58 [EDA] Note: detected 384 virtual cores but NumExpr set to maximum of 64, check "NUMEXPR_MAX_THREADS" environment variable.
+
+2026-05-16 22:10:58.487 2026-05-16 22:10:58 [EDA] Note: NumExpr detected 384 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 16.
+
+2026-05-16 22:10:58.487 2026-05-16 22:10:58 [EDA] NumExpr defaulting to 16 threads.
+
+2026-05-16 22:10:59.758 2026-05-16 22:10:59 [EDA]   Global time range:
+
+2026-05-16 22:10:59.758 2026-05-16 22:10:59 [EDA]     2026-02-28 08:35:09  ->  2026-03-04 09:49:50
+
+2026-05-16 22:10:59.758 2026-05-16 22:10:59 [EDA]     Duration: 350081s = 5834.7min = 97.24h
+
+2026-05-16 22:10:59.758 2026-05-16 22:10:59 [EDA]   Train split (940 RGs, 1,895,650 rows):
+
+2026-05-16 22:10:59.758 2026-05-16 22:10:59 [EDA]     2026-02-28 08:35:09  ->  2026-03-04 09:49:50
+
+2026-05-16 22:10:59.759 2026-05-16 22:10:59 [EDA]     Duration: 350081s = 5834.7min
+
+2026-05-16 22:10:59.759 2026-05-16 22:10:59 [EDA]   Valid split (104 RGs, 204,306 rows):
+
+2026-05-16 22:10:59.759 2026-05-16 22:10:59 [EDA]     2026-02-28 11:04:32  ->  2026-03-04 09:49:47
+
+2026-05-16 22:10:59.759 2026-05-16 22:10:59 [EDA]     Duration: 341115s = 5685.2min
+
+2026-05-16 22:10:59.759 2026-05-16 22:10:59 [EDA]   WARNING: Time overlap detected — train/valid overlap by 341115s
+
+2026-05-16 22:10:59.759 2026-05-16 22:10:59 [EDA] 
+
+2026-05-16 22:10:59.759 ======================================================================
+
+2026-05-16 22:10:59.759   Section 3: Dataset Counts (user_id / item_id)
+
+2026-05-16 22:10:59.759 ======================================================================
+
+2026-05-16 22:11:02.510 2026-05-16 22:11:02 [EDA]   Unique user_id:  2,099,956
+
+2026-05-16 22:11:02.510 2026-05-16 22:11:02 [EDA]   Unique item_id:  231,479
+
+2026-05-16 22:11:02.510 2026-05-16 22:11:02 [EDA]   Total rows:      2,099,956
+
+2026-05-16 22:11:02.658 2026-05-16 22:11:02 [EDA]   Rows per user:   mean=1.00, median=1, max=1
+
+2026-05-16 22:11:02.695 2026-05-16 22:11:02 [EDA]   Rows per item:   mean=9.07, median=2, max=7591
+
+2026-05-16 22:11:02.736 2026-05-16 22:11:02 [EDA]   Users with >1 exposure: 0 (0.0%)
+
+2026-05-16 22:11:02.736 2026-05-16 22:11:02 [EDA]   Items with >1 exposure: 126,294 (54.6%)
+
+2026-05-16 22:11:02.736 2026-05-16 22:11:02 [EDA] 
+
+2026-05-16 22:11:02.736   Top-10 most exposed items:
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=53440080: 7591 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=100182015: 5921 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=34512628: 5893 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=66438683: 5071 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=69930692: 5055 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=29643702: 4792 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=41553391: 3836 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=96068810: 3756 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=98714338: 3430 exposures
+
+2026-05-16 22:11:02.767 2026-05-16 22:11:02 [EDA]     item_id=38291975: 3198 exposures
+
+2026-05-16 22:11:02.830 2026-05-16 22:11:02 [EDA] 
+
+2026-05-16 22:11:02.830 ======================================================================
+
+2026-05-16 22:11:02.830   Section 4: Label Statistics
+
+2026-05-16 22:11:02.830 ======================================================================
+
+2026-05-16 22:11:03.731 2026-05-16 22:11:03 [EDA]   label_type=1 (click):       1,886,438 (89.8%)
+
+2026-05-16 22:11:03.731 2026-05-16 22:11:03 [EDA]   label_type=2 (conversion):  213,518 (10.2%)
+
+2026-05-16 22:11:03.731 2026-05-16 22:11:03 [EDA]   Positive rate:              0.1017 (10.17%)
+
+2026-05-16 22:11:03.731 2026-05-16 22:11:03 [EDA]   Class imbalance ratio:      ~1:8.8
+
+2026-05-16 22:11:03.731 2026-05-16 22:11:03 [EDA] 
+
+2026-05-16 22:11:03.731   Conversion delay (label_time - timestamp):
+
+2026-05-16 22:11:03.731 2026-05-16 22:11:03 [EDA]     mean=1546.7s, std=7355.0s
+
+2026-05-16 22:11:03.731 2026-05-16 22:11:03 [EDA]     min=0s, max=267254s
+
+2026-05-16 22:11:03.731 2026-05-16 22:11:03 [EDA] 
+
+2026-05-16 22:11:03.731 ======================================================================
+
+2026-05-16 22:11:03.731   Section 5: Feature Quality & Missingness
+
+2026-05-16 22:11:03.731 ======================================================================
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA] 
+
+2026-05-16 22:11:28.046   User Int (46 cols: 35 scalar, 11 list):
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     Feature                         Null%  N-unique          Min          Max
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_1                 0.0%         5            1            5
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_100              84.8%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_101              91.7%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_102              89.4%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_103              88.4%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_104              38.8%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_105              32.6%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_106              13.9%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_107              34.9%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_108              52.5%         7            1            7
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_109              87.5%         7            1            7
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_3                 2.6%     1,839            1         1839
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_4                 2.6%       992            0          991
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_48                0.1%       100            1          100
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_49                0.4%         2            1            2
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_50                0.1%         4            0            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_51                0.0%       155            1          155
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_52                0.0%       188            1          188
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_53                0.0%       558            1          558
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_54               31.8%     2,858            1         2858
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_55                1.4%        43            1           43
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_56                1.4%     1,436            1         1436
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_57                2.0%       253            0          252
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_58               15.8%         2            1            2
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_59               15.8%        14            1           14
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_82               22.2%        23            1           23
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_86               71.0%       245            1          245
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_92               50.1%         2            1            2
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_93               20.5%        37            1           37
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_94               52.8%         6            1            6
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_95               36.9%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_96               71.8%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_97               30.4%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_98                9.1%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     user_int_feats_99               81.1%         3            1            3
+
+2026-05-16 22:11:28.046 2026-05-16 22:11:28 [EDA]     Feature                         Null%  Len mean   Len max
+
+2026-05-16 22:11:28.107 2026-05-16 22:11:28 [EDA]     user_int_feats_15               13.6%       3.9        26
+
+2026-05-16 22:11:28.134 2026-05-16 22:11:28 [EDA]     user_int_feats_60               68.6%       1.5         2
+
+2026-05-16 22:11:28.199 2026-05-16 22:11:28 [EDA]     user_int_feats_62                6.2%       2.3         7
+
+2026-05-16 22:11:28.264 2026-05-16 22:11:28 [EDA]     user_int_feats_63                6.2%       2.6        20
+
+2026-05-16 22:11:28.331 2026-05-16 22:11:28 [EDA]     user_int_feats_64                6.2%       4.3        33
+
+2026-05-16 22:11:28.398 2026-05-16 22:11:28 [EDA]     user_int_feats_65                7.1%       6.4       116
+
+2026-05-16 22:11:28.465 2026-05-16 22:11:28 [EDA]     user_int_feats_66                7.5%       9.2       201
+
+2026-05-16 22:11:28.520 2026-05-16 22:11:28 [EDA]     user_int_feats_80               24.8%       1.3         6
+
+2026-05-16 22:11:28.583 2026-05-16 22:11:28 [EDA]     user_int_feats_89                3.9%      10.0        10
+
+2026-05-16 22:11:28.648 2026-05-16 22:11:28 [EDA]     user_int_feats_90                7.0%      10.0        10
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     user_int_feats_91               49.1%      10.0        10
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA] 
+
+2026-05-16 22:11:28.682   Item Int (14 cols: 13 scalar, 1 list):
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     Feature                         Null%  N-unique          Min          Max
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_10                0.1%       306            1          306
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_12                0.1%     2,381           -1         2379
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_13                0.1%         8            1            8
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_16                0.1%    22,879            0        22878
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_5                 0.1%       294            1          294
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_6                 0.1%       897            0          896
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_7                 0.1%     2,381           -1         2379
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_8                 0.1%     2,112           -1         2110
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_81                0.1%         3            0            2
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_83               88.7%        31            1           31
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_84               88.7%       227            1          227
+
+2026-05-16 22:11:28.682 2026-05-16 22:11:28 [EDA]     item_int_feats_85               88.7%     1,019            1         1019
+
+2026-05-16 22:11:28.683 2026-05-16 22:11:28 [EDA]     item_int_feats_9                 0.1%        41            1           41
+
+2026-05-16 22:11:28.683 2026-05-16 22:11:28 [EDA]     Feature                         Null%  Len mean   Len max
+
+2026-05-16 22:11:28.719 2026-05-16 22:11:28 [EDA]     item_int_feats_11               52.2%       3.8        20
+
+2026-05-16 22:11:28.719 2026-05-16 22:11:28 [EDA] 
+
+2026-05-16 22:11:28.719   User Dense (10 cols: 0 scalar, 10 list):
+
+2026-05-16 22:11:28.719 2026-05-16 22:11:28 [EDA]     Feature                         Null%  Len mean   Len max
+
+2026-05-16 22:11:28.785 2026-05-16 22:11:28 [EDA]     user_dense_feats_61              0.1%     256.0       256
+
+2026-05-16 22:11:28.856 2026-05-16 22:11:28 [EDA]     user_dense_feats_62              6.2%       2.3         7
+
+2026-05-16 22:11:28.923 2026-05-16 22:11:28 [EDA]     user_dense_feats_63              6.2%       2.6        20
+
+2026-05-16 22:11:28.988 2026-05-16 22:11:28 [EDA]     user_dense_feats_64              6.2%       4.3        33
+
+2026-05-16 22:11:29.055 2026-05-16 22:11:29 [EDA]     user_dense_feats_65              7.1%       6.4       116
+
+2026-05-16 22:11:29.120 2026-05-16 22:11:29 [EDA]     user_dense_feats_66              7.5%       9.2       201
+
+2026-05-16 22:11:29.234 2026-05-16 22:11:29 [EDA]     user_dense_feats_87              0.7%     320.0       320
+
+2026-05-16 22:11:29.301 2026-05-16 22:11:29 [EDA]     user_dense_feats_89              3.9%      10.0        10
+
+2026-05-16 22:11:29.363 2026-05-16 22:11:29 [EDA]     user_dense_feats_90              7.0%      10.0        10
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_dense_feats_91             49.1%      10.0        10
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA] 
+
+2026-05-16 22:11:29.400   WARNING: High-missingness features (>50%):
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_101            : 91.7%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_102            : 89.4%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     item_int_feats_85             : 88.7%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     item_int_feats_83             : 88.7%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     item_int_feats_84             : 88.7%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_103            : 88.4%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_109            : 87.5%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_100            : 84.8%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_99             : 81.1%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_96             : 71.8%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_86             : 71.0%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_60             : 68.6%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_94             : 52.8%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_108            : 52.5%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     item_int_feats_11             : 52.2%
+
+2026-05-16 22:11:29.400 2026-05-16 22:11:29 [EDA]     user_int_feats_92             : 50.1%
+
+2026-05-16 22:11:29.479 2026-05-16 22:11:29 [EDA] 
+
+2026-05-16 22:11:29.480   Summary written to /apdcephfs_fsgm2/share_305170765/angel/ams_2026_1029731852466346144/angel_training_ams_2026_1029731852466346144_20260516164611_bc19032e/8b0a75a49e2169c6019e2ff70b2d21c5/log/eda_summary.json
+
+2026-05-16 22:11:29.480 2026-05-16 22:11:29 [EDA] 
+
+2026-05-16 22:11:29.480 EDA complete!
+
+2026-05-16 22:11:29.772 INFO:  ======= End cmd =======
+
+2026-05-16 22:11:29.778 [TAIJI] user exit code: 0
+
