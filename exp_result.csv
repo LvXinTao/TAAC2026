@@ -16,3 +16,4 @@ date,name,val/LogLoss,val/AUC,val/delta_AUC,test/AUC,test/delta_AUC,baseline
 2026-05-15,20260514_muon-optimizer,0.233479,0.861106,-0.00726,0.822786,-0.02222,timestamp-features
 2026-05-15,20260515_wd005_warmup500,0.227038,0.868146,+0.00025,0.846023,+0.00102,timestamp-features
 2026-05-16,20260516_amp_warmup_wd,0.225930,0.868230,+0.00025,0.843719,-0.00129,timestamp-features
+2026-05-18,20260518_user_dense_ue_pair,0.227021,0.867014,+0.002743,0.841913,+0.000058,baseline
