@@ -1,0 +1,42 @@
+{
+  "_purpose": "Semantics-driven NS grouping for GroupNSTokenizer. Based on EDA report (20260516_server_eda/result/eda_report_20260516.md).",
+  "_format": "Top-level keys: 'user_ns_groups' and 'item_ns_groups', each mapping a group name to a list of feature ids (fids). Keys starting with '_' are comments and are ignored by train.py.",
+  "_usage": "Pass --ns_tokenizer_type group --ns_groups_json ./ns_groups.json --num_queries 1 --d_model 64 to train.py.",
+
+  "_note_T": "T = num_queries * num_sequences + num_ns = 1*4 + (7+1+4) = 16. d_model=64 satisfies 64 % 16 == 0.",
+  "_note_user_dense": "user_dense_feats (fid 61/62/63/64/65/66/87/89/90/91, total_dim=918) are projected to 1 NS token by the model. Not configured here.",
+  "_note_shared_fids": "Fids 62/63/64/65/66/89/90/91 appear in both user_int_feats and user_dense_feats; their int parts are grouped below, float parts go into the user_dense token.",
+
+  "_high_missing_threshold": ">70% per EDA report. Strictly: user fid=86(71.0%), 96(71.8%), 99(81.1%), 100(84.8%), 101(91.7%), 102(89.4%), 103(88.4%), 109(87.5%). item fid=83(88.7%), 84(88.7%), 85(88.7%).",
+
+  "_grouping_rationale": {
+    "U1_static_profile": "User static demographics. fid=1(0.0%, 5-value: gender/age-bracket), fid=3(2.6%, 1839-value: city/region), fid=4(2.6%, 992-value: profession/industry), fid=49(0.4%, binary). All stable identity attributes with very low missing rates.",
+    "U2_activity": "User activity level. fid=48(0.1%, 100-value percentile score), fid=50(0.1%, 4-value: low-cardinality activity tier), fid=82(22.2%, 23-value: engagement tier). All capture user activity/value intensity.",
+    "U3_interests": "Clean user interest labels. fid=51(0.0%, 155), fid=52(0.0%, 188), fid=53(0.0%, 558), fid=54(31.8%, 2858), fid=55(1.4%, 43), fid=57(2.0%, 253). Low-to-moderate missing, mid-cardinality preference signals. fid=54 has 31.8% missing but is well below the 70% threshold.",
+    "U4_beh_context": "Behavioral context. fid=56(1.4%, 1436), fid=58(15.8%, binary), fid=59(15.8%, 14-value), fid=93(20.5%, 37-value), fid=95(36.9%, 3-value), fid=97(30.4%, 3-value), fid=98(9.1%, 3-value). Moderate-missing user behavioral state features.",
+    "U5_multival": "Multi-value tag arrays. fid=15(13.6%, avg_len=3.9, max=26: variable-length interest tags), fid=80(24.8%, avg_len=1.3, max=6: short multi-label). Only two variable-length user tag lists.",
+    "U6_aligned_ids": "Behavior-aligned IDs paired with dense stats. fid=62(6.2%, avg_len=2.3), fid=63(6.2%, avg_len=2.6), fid=64(6.2%, avg_len=4.3), fid=65(7.1%, avg_len=6.4), fid=66(7.5%, avg_len=9.2), fid=89(3.9%, fixed_len=10), fid=90(7.0%, fixed_len=10). Each has a corresponding user_dense_feats of same fid providing element-wise statistical scores. Richest behavioral signals.",
+    "U7_high_missing": "High-missing (>70%) features + remaining moderate-missing sparse labels. Strictly >70%: fid=86(71.0%), fid=96(71.8%), fid=99(81.1%), fid=100(84.8%), fid=101(91.7%), fid=102(89.4%), fid=103(88.4%), fid=109(87.5%). Co-isolated moderate-missing labels without clean semantic home: fid=60(68.6%, list), fid=91(49.1%, fixed_len=10), fid=92(50.1%, binary), fid=94(52.8%, 6-value), fid=104(38.8%, 3-value), fid=105(32.6%, 3-value), fid=106(13.9%, 3-value), fid=107(34.9%, 3-value), fid=108(52.5%, 7-value). Noise-isolation group.",
+    "I1_category": "Ad category hierarchy. fid=5(0.1%, 294-value: top-level), fid=6(0.1%, 897-value: second-level), fid=9(0.1%, 41-value: ad format), fid=10(0.1%, 306-value: ad type), fid=13(0.1%, 8-value: subtype). All extremely low missing. Natural taxonomy cluster.",
+    "I2_fine_category": "Fine-grained ad taxonomy. fid=7(0.1%, 2381-value, contains -1), fid=8(0.1%, 2112-value, contains -1), fid=12(0.1%, 2381-value, contains -1). Same missing rate, similar high cardinality, -1 treated as padding=0.",
+    "I3_ad_identity": "Ad identity signals. fid=16(0.1%, 22879-value: high-cardinality advertiser/creative ID), fid=81(0.1%, 3-value: platform/status flag), fid=11(52.2%, avg_len=3.8: multi-label ad tags). fid=16 is the strongest item-side signal.",
+    "I4_high_missing": "High-missing ad attributes (all 88.7%): fid=83(31-value), fid=84(227-value), fid=85(1019-value). Co-missing on the same samples. Isolated to prevent zero-embedding noise."
+  },
+
+  "user_ns_groups": {
+    "U1_static_profile": [1, 3, 4, 49],
+    "U2_activity":       [48, 50, 82],
+    "U3_interests":      [51, 52, 53, 54, 55, 57],
+    "U4_beh_context":    [56, 58, 59, 93, 95, 97, 98],
+    "U5_multival":       [15, 80],
+    "U6_aligned_ids":    [62, 63, 64, 65, 66, 89, 90],
+    "U7_high_missing":   [60, 86, 91, 92, 94, 96, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109]
+  },
+
+  "item_ns_groups": {
+    "I1_category":      [5, 6, 9, 10, 13],
+    "I2_fine_category": [7, 8, 12],
+    "I3_ad_identity":   [16, 81, 11],
+    "I4_high_missing":  [83, 84, 85]
+  }
+}
