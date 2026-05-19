@@ -40,4 +40,4 @@ EMA 是 CTR 领域的经典 trick。训练过程中对 dense 参数维护指数�
 
 | val/LogLoss | val/AUC | val/delta_AUC | test/AUC | test/delta_AUC |
 |-------------|---------|---------------|----------|----------------|
-| TBD | TBD | TBD | TBD | TBD |
+| 0.22525 | 0.86905 | -0.00177 | 0.84924 | +0.00099 |

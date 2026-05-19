@@ -20,3 +20,4 @@ date,name,val/LogLoss,val/AUC,val/delta_AUC,test/AUC,test/delta_AUC,baseline
 2026-05-18,20260518_user_dense_ue_pair,0.227021,0.867014,+0.002743,0.841913,+0.000058,baseline
 2026-05-18,20260518_user_dense_wd,0.224374,0.870815,+0.00181,0.848254,+0.00178,warmup-weight-decay
 2026-05-19,20260518_user_dense_wd_tc,0.224751,0.870135,-0.00068,0.843849,-0.00440,user-dense-ue-wd
+2026-05-19,20260519_user_dense_ema,0.225253,0.869054,-0.00176,0.849241,+0.00099,user-dense-ue-wd
