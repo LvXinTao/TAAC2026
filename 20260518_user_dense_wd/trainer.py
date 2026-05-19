@@ -22,6 +22,58 @@ from utils import sigmoid_focal_loss, EarlyStopping
 from model import ModelInput
 
 
+class EMA:
+    """Exponential Moving Average for model dense parameters.
+
+    Maintains shadow copies of dense (non-Embedding) parameters and updates
+    them after each optimizer step. Provides apply/restore for checkpoint
+    saving with EMA weights.
+
+    Usage:
+        ema = EMA(model, decay=0.999, device='cuda')
+        # After optimizer.step():
+        ema.step()
+        # Before saving best checkpoint:
+        old = ema.apply_to_model()
+        torch.save(model.state_dict(), path)
+        ema.restore(old)
+    """
+
+    def __init__(self, model: nn.Module, decay: float, device: str) -> None:
+        self.decay = decay
+        self.model = model
+        self.shadow: dict = {}
+        for p in model.get_dense_params():
+            self.shadow[p.data_ptr()] = p.data.clone().to(device)
+
+    @torch.no_grad()
+    def step(self) -> None:
+        """Update shadow copies: shadow = decay * shadow + (1 - decay) * param."""
+        for p in self.model.get_dense_params():
+            ptr = p.data_ptr()
+            if ptr in self.shadow:
+                self.shadow[ptr].mul_(self.decay).add_(p.data, alpha=1 - self.decay)
+
+    @torch.no_grad()
+    def apply_to_model(self) -> dict:
+        """Swap EMA weights into model, return old values for restore."""
+        old = {}
+        for p in self.model.get_dense_params():
+            ptr = p.data_ptr()
+            if ptr in self.shadow:
+                old[ptr] = p.data.clone()
+                p.data.copy_(self.shadow[ptr])
+        return old
+
+    @torch.no_grad()
+    def restore(self, old: dict) -> None:
+        """Restore model params from apply_to_model return value."""
+        for p in self.model.get_dense_params():
+            ptr = p.data_ptr()
+            if ptr in old:
+                p.data.copy_(old[ptr])
+
+
 class PCVRHyFormerRankingTrainer:
     """PCVRHyFormer trainer for pointwise binary classification.
 
