@@ -17,6 +17,7 @@ python3 -u "${SCRIPT_DIR}/train.py" \
     --num_workers 8 \
     --weight_decay 0.01 \
     --warmup_steps 100 \
+    --ema_decay 0.999 \
     "$@"
 
 # ---- Alternative config: GroupNSTokenizer driven by ns_groups.json ----
