@@ -165,6 +165,11 @@ def parse_args() -> argparse.Namespace:
                              'Embeddings whose vocab_size exceeds this value are reset '
                              'at each epoch end (0 = never reset any Embedding)')
 
+    parser.add_argument('--ema_decay', type=float, default=0.0,
+                        help='EMA decay rate for dense parameters (0 = disabled). '
+                             'When enabled, EMA weights are saved in the best_model '
+                             'checkpoint for inference. Typical values: 0.999, 0.9999.')
+
     # Embedding construction control.
     parser.add_argument('--emb_skip_threshold', type=int, default=0,
                         help='At model construction time, features whose vocab_size '
@@ -363,6 +368,7 @@ def main() -> None:
         sparse_weight_decay=args.sparse_weight_decay,
         reinit_sparse_after_epoch=args.reinit_sparse_after_epoch,
         reinit_cardinality_threshold=args.reinit_cardinality_threshold,
+        ema_decay=args.ema_decay,
         ckpt_params=ckpt_params,
         writer=writer,
         schema_path=schema_path,

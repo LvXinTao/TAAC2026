@@ -112,6 +112,7 @@ class PCVRHyFormerRankingTrainer:
         train_config: Optional[Dict[str, Any]] = None,
         weight_decay: float = 0.0,
         warmup_steps: int = 0,
+        ema_decay: float = 0.0,
     ) -> None:
         self.model: nn.Module = model
         self.train_loader: DataLoader = train_loader
@@ -168,6 +169,12 @@ class PCVRHyFormerRankingTrainer:
                 self.dense_optimizer,
                 lr_lambda=lambda step: min(1.0, step / warmup_steps),
             )
+
+        self.ema_decay = ema_decay
+        self.ema: Optional[EMA] = None
+        if ema_decay > 0:
+            self.ema = EMA(model, decay=ema_decay, device=device)
+            logging.info(f"EMA enabled with decay={ema_decay}")
 
         logging.info(f"PCVRHyFormerRankingTrainer loss_type={loss_type}, "
                      f"focal_alpha={focal_alpha}, focal_gamma={focal_gamma}, "
@@ -320,33 +327,43 @@ class PCVRHyFormerRankingTrainer:
             })
             return
 
-        # Point EarlyStopping at the canonical best-model location for this
-        # step. Only done on the likely-new-best branch so that a skipped
-        # save never leaks the unused path into EarlyStopping state.
-        best_dir = os.path.join(
-            self.save_dir,
-            self._build_step_dir_name(total_step, is_best=True),
-        )
-        self.early_stopping.checkpoint_path = os.path.join(best_dir, "model.pt")
+        # Swap to EMA weights before saving checkpoint (if EMA enabled).
+        ema_old = None
+        if self.ema is not None:
+            ema_old = self.ema.apply_to_model()
 
-        # Remove stale best dirs first so EarlyStopping's write is the only
-        # I/O needed when a new best is confirmed.
-        self._remove_old_best_dirs()
+        try:
+            # Point EarlyStopping at the canonical best-model location for this
+            # step. Only done on the likely-new-best branch so that a skipped
+            # save never leaks the unused path into EarlyStopping state.
+            best_dir = os.path.join(
+                self.save_dir,
+                self._build_step_dir_name(total_step, is_best=True),
+            )
+            self.early_stopping.checkpoint_path = os.path.join(best_dir, "model.pt")
 
-        self.early_stopping(val_auc, self.model, {
-            "best_val_AUC": val_auc,
-            "best_val_logloss": val_logloss,
-        })
+            # Remove stale best dirs first so EarlyStopping's write is the only
+            # I/O needed when a new best is confirmed.
+            self._remove_old_best_dirs()
 
-        # Write sidecar files only when EarlyStopping actually confirmed a
-        # new best and wrote model.pt. If the score tripped our heuristic
-        # but EarlyStopping internally declined to save, skip to avoid
-        # creating an empty (sidecar-only) checkpoint directory.
-        if self.early_stopping.best_score != old_best and os.path.exists(
-            self.early_stopping.checkpoint_path
-        ):
-            self._save_step_checkpoint(
-                total_step, is_best=True, skip_model_file=True)
+            self.early_stopping(val_auc, self.model, {
+                "best_val_AUC": val_auc,
+                "best_val_logloss": val_logloss,
+            })
+
+            # Write sidecar files only when EarlyStopping actually confirmed a
+            # new best and wrote model.pt. If the score tripped our heuristic
+            # but EarlyStopping internally declined to save, skip to avoid
+            # creating an empty (sidecar-only) checkpoint directory.
+            if self.early_stopping.best_score != old_best and os.path.exists(
+                self.early_stopping.checkpoint_path
+            ):
+                self._save_step_checkpoint(
+                    total_step, is_best=True, skip_model_file=True)
+        finally:
+            # Restore training weights after checkpoint saving.
+            if ema_old is not None:
+                self.ema.restore(ema_old)
 
     def train(self) -> None:
         """Main training loop: iterates over epochs, performs step-level and
@@ -489,6 +506,8 @@ class PCVRHyFormerRankingTrainer:
         torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0, foreach=False)
 
         self.dense_optimizer.step()
+        if self.ema is not None:
+            self.ema.step()
         if self.sparse_optimizer is not None:
             self.sparse_optimizer.step()
 
