@@ -248,6 +248,12 @@ def load_model_state_strict(
     with a diagnostic message.
     """
     state_dict = torch.load(ckpt_path, map_location=device)
+    # torch.compile() wraps the model in OptimizedModule, prefixing all keys
+    # with "_orig_mod.". Strip this prefix so keys match the uncompiled model.
+    state_dict = {
+        k.replace("_orig_mod.", "", 1) if k.startswith("_orig_mod.") else k: v
+        for k, v in state_dict.items()
+    }
     try:
         model.load_state_dict(state_dict, strict=True)
     except RuntimeError as e:
