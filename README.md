@@ -34,6 +34,7 @@
 | 2026-05-18 | user-dense-ue-wd | 0.22437 | 0.87082 | +0.00181 | 0.84825 | +0.00178 | warmup-weight-decay |
 | 2026-05-19 | user-dense-wd-tc | 0.22475 | 0.87014 | -0.00068 | 0.84385 | -0.00440 | user-dense-ue-wd |
 | 2026-05-19 | user-dense-ema | 0.22525 | 0.86905 | -0.00177 | 0.84924 | +0.00099 | user-dense-ue-wd |
+| 2026-05-20 | user-dense-cosine | - | - | - | - | - | user-dense-ema |
 
 ## 训练与评估工具
 
