@@ -33,6 +33,7 @@
 | 2026-05-18 | user-dense-ue-pair | 0.22702 | 0.86701 | +0.00274 | 0.84191 | +0.00006 | baseline |
 | 2026-05-18 | user-dense-ue-wd | 0.22437 | 0.87082 | +0.00181 | 0.84825 | +0.00178 | warmup-weight-decay |
 | 2026-05-19 | user-dense-wd-tc | 0.22475 | 0.87014 | -0.00068 | 0.84385 | -0.00440 | user-dense-ue-wd |
+| 2026-05-19 | user-dense-ema | TBD | TBD | TBD | TBD | TBD | user-dense-ue-wd |
 
 ## 训练与评估工具
 
