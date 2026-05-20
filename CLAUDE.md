@@ -33,6 +33,7 @@
 | 2026-05-19 | user-dense-wd-tc | 0.22475 | 0.87014 | -0.00068 | 0.84385 | -0.00440 | user-dense-ue-wd |
 | 2026-05-19 | user-dense-ema | 0.22525 | 0.86905 | -0.00177 | 0.84924 | +0.00099 | user-dense-ue-wd |
 | 2026-05-20 | user-dense-cosine | 0.22319 | 0.87196 | +0.00291 | 0.84815 | -0.00109 | user-dense-ema |
+| 2026-05-20 | user-dense-autotoken | 0.22471 | 0.87022 | +0.00117 | 0.84544 | -0.00380 | user-dense-ema |
 
 每次新实验完成后，将结果追加到 `exp_result.csv`、`CLAUDE.md`、模型文件夹下的`README.md`，以及项目根目录下的`README.md`。
 

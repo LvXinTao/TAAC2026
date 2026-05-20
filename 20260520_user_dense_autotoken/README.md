@@ -53,6 +53,4 @@ AutoNSTokenizer 的思路（参考 MTMixAtt 论文 Section 3.2 AutoToken）：�
 
 | val/LogLoss | val/AUC | val/delta_AUC | test/AUC | test/delta_AUC |
 |-------------|---------|---------------|----------|----------------|
-| - | - | - | - | - |
-
-（待训练完成后更新）
+| 0.22471 | 0.87022 | +0.00117 | 0.84544 | -0.00380 |
