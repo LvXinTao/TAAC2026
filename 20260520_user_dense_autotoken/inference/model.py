@@ -1256,7 +1256,9 @@ class AutoNSTokenizer(nn.Module):
         if groups:
             for g, fid_indices in enumerate(groups):
                 if g < num_ns_tokens:
-                    self.W.data[g, fid_indices] = 1.0
+                    for fid in fid_indices:
+                        if self._emb_index[fid] != -1:
+                            self.W.data[g, fid] = 1.0
 
         self.token_projs = nn.ModuleList([
             nn.Sequential(
