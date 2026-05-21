@@ -1395,6 +1395,7 @@ class PCVRHyFormer(nn.Module):
         ns_tokenizer_type: str = 'rankmixer',
         user_ns_tokens: int = 0,
         item_ns_tokens: int = 0,
+        use_wide_branch: bool = False,
     ) -> None:
         super().__init__()
 
@@ -1511,6 +1512,8 @@ class PCVRHyFormer(nn.Module):
         self.num_ns = (num_user_ns + (1 if self.has_user_dense else 0)
                        + num_item_ns + (1 if self.has_item_dense else 0))
 
+        self.use_wide_branch = use_wide_branch
+
         # ================== Check d_model % T == 0 constraint (full mode only) ==================
         T = num_queries * self.num_sequences + self.num_ns
         if rank_mixer_mode == 'full' and d_model % T != 0:
@@ -1625,6 +1628,18 @@ class PCVRHyFormer(nn.Module):
             nn.Dropout(dropout_rate),
             nn.Linear(d_model, action_num)
         )
+
+        if self.use_wide_branch:
+            self.wide_branch = nn.Sequential(
+                nn.Linear(self.num_ns * d_model, d_model),
+                nn.LayerNorm(d_model),
+                nn.SiLU(),
+                nn.Dropout(dropout_rate),
+            )
+            logging.info(
+                f"Wide branch enabled: input_dim={self.num_ns * d_model}, "
+                f"output_dim={d_model}, fusion=additive"
+            )
 
         # Initialize parameters
         self._init_params()
@@ -1877,6 +1892,7 @@ class PCVRHyFormer(nn.Module):
             ns_parts.append(item_dense_tok)
 
         ns_tokens = torch.cat(ns_parts, dim=1)  # (B, num_ns, D)
+        B = ns_tokens.shape[0]
 
         # 2. Embed each sequence domain (dynamic)
         seq_tokens_list = []
@@ -1900,7 +1916,12 @@ class PCVRHyFormer(nn.Module):
             apply_dropout=self.training
         )
 
-        # 5. Classifier
+        # 5. Wide branch (if enabled): ns_tokens -> linear -> add to deep output
+        if self.use_wide_branch:
+            wide_feat = self.wide_branch(ns_tokens.view(B, -1))
+            output = output + wide_feat
+
+        # 6. Classifier
         logits = self.clsfier(output)  # (B, action_num)
         return logits
 
@@ -1923,6 +1944,7 @@ class PCVRHyFormer(nn.Module):
             ns_parts.append(item_dense_tok)
 
         ns_tokens = torch.cat(ns_parts, dim=1)
+        B = ns_tokens.shape[0]
 
         seq_tokens_list = []
         seq_masks_list = []
@@ -1942,6 +1964,10 @@ class PCVRHyFormer(nn.Module):
             q_tokens_list, ns_tokens, seq_tokens_list, seq_masks_list,
             apply_dropout=False
         )
+
+        if self.use_wide_branch:
+            wide_feat = self.wide_branch(ns_tokens.view(B, -1))
+            output = output + wide_feat
 
         logits = self.clsfier(output)
         return logits, output
