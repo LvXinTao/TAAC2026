@@ -21,7 +21,8 @@ date,name,val/LogLoss,val/AUC,val/delta_AUC,test/AUC,test/delta_AUC,baseline
 2026-05-18,20260518_user_dense_wd,0.224374,0.870815,+0.00181,0.848254,+0.00178,warmup-weight-decay
 2026-05-19,20260518_user_dense_wd_tc,0.224751,0.870135,-0.00068,0.843849,-0.00440,user-dense-ue-wd
 2026-05-19,20260519_user_dense_ema,0.225253,0.869054,-0.00176,0.849241,+0.00099,user-dense-ue-wd
-2026-05-19,long-seq-v2,0.22460,0.87041,+0.00140,0.83771,-0.01054,warmup-weight-decay
+2026-05-18,long-seq,0.22449,0.87035,+0.00134,0.83924,-0.00723,warmup-weight-decay
+2026-05-19,long-seq-v2,0.22460,0.87041,+0.00140,0.83771,-0.00876,warmup-weight-decay
 2026-05-20,20260520_user_dense_cosine,0.22319,0.871959,+0.00291,0.848154,-0.00109,user-dense-ema
 2026-05-20,20260520_user_dense_cosine_10w,0.22394,0.871218,+0.00216,0.849220,-0.00002,user-dense-cosine
 2026-05-20,20260520_user_dense_autotoken,0.22471,0.870220,+0.00117,0.845437,-0.00380,user-dense-ema
