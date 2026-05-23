@@ -23,10 +23,17 @@
 - `20260518_long_seq_v2/inference/model.py`
 - `20260518_long_seq_v2/inference/infer.py`
 
+## 基线
+
+本实验基于 `20260514_warmup_weight_decay`（per-token independent FFN + weight_decay 0.01 + warmup 100 steps），在此基础上叠加了 `UserDenseUEPairProjector`（来自 `20260518_user_dense_wd`）以及前一次长序列实验（`20260518_long_seq`）的 LongerEncoder 改动，并进一步调整了序列编码策略和模型容量。
+
 ## 实验结果
-- **val/AUC**: 0.87041 (Step 30440)
-- **val/LogLoss**: 0.22460
-- **test/AUC**: 0.83771
+
+| val/LogLoss | val/AUC | val/delta_AUC | test/AUC | test/delta_AUC |
+|-------------|---------|---------------|----------|----------------|
+| 0.22460 | 0.87041 | +0.00140 | 0.83771 | -0.00876 |
+
+最佳 checkpoint: step 30440
 
 **结论**: 
-相比于 baseline (`user_dense_wd`, val/AUC=0.87082, test/AUC=0.84825)，本次实验在验证集上取得了很高的分数（0.87041），但在测试集上分数暴跌至 0.83771。这说明参数规模增大（`d_model=128`）以及更激进的 `LongerEncoder` 配置导致了**严重的过拟合**，模型失去了泛化能力。
+相比于 baseline (`warmup-weight-decay`, val/AUC=0.86901, test/AUC=0.84647），验证集 AUC 略有提升（+0.00140），测试集 AUC 大幅下降（-0.00876，0.84647 → 0.83771）。参数规模增大（`d_model=128`）以及更激进的 `LongerEncoder` 配置导致了**严重的过拟合**，模型完全失去了泛化能力。
